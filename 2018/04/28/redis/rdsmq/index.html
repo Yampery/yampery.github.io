@@ -85,15 +85,15 @@
 
 <meta name="description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="博文整理">
+<meta property="og:title" content="基于Redis的消息队列">
 <meta property="og:url" content="http://yoursite.com/2018/04/28/redis/rdsmq/index.html">
 <meta property="og:site_name" content="博文整理">
 <meta property="og:description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20180209131159151?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2l6YXJkX3Jw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
-<meta property="og:updated_time" content="2018-04-28T09:55:16.104Z">
+<meta property="og:updated_time" content="2018-04-28T09:56:43.825Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="博文整理">
+<meta name="twitter:title" content="基于Redis的消息队列">
 <meta name="twitter:description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20180209131159151?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2l6YXJkX3Jw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
 
@@ -131,7 +131,7 @@
 
 
 
-  <title> | 博文整理</title>
+  <title>基于Redis的消息队列 | 博文整理</title>
   
 
 
@@ -255,7 +255,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">基于Redis的消息队列</h1>
         
 
         <div class="post-meta">
@@ -379,8 +379,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/28/ykt_test_binding/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2018/04/28/ykt_test_binding/" rel="next" title="性能测试">
+                <i class="fa fa-chevron-left"></i> 性能测试
               </a>
             
           </div>
