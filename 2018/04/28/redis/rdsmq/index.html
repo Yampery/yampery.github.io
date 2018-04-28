@@ -73,6 +73,8 @@
 
 
 
+  
+
 
   <link rel="alternate" href="/atom.xml" title="博文整理" type="application/atom+xml" />
 
@@ -81,13 +83,19 @@
 
 
 
-<meta property="og:type" content="website">
+<meta name="description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
+<meta property="og:type" content="article">
 <meta property="og:title" content="博文整理">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/04/28/redis/rdsmq/index.html">
 <meta property="og:site_name" content="博文整理">
+<meta property="og:description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20180209131159151?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2l6YXJkX3Jw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:updated_time" content="2018-04-28T09:55:16.104Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="博文整理">
+<meta name="twitter:description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  1. 设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20180209131159151?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd2l6YXJkX3Jw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
 
 
 
@@ -117,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/04/28/redis/rdsmq/"/>
 
 
 
 
 
-  <title>博文整理</title>
+  <title> | 博文整理</title>
   
 
 
@@ -142,8 +150,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -216,9 +223,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -248,9 +255,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/28/redis/rdsmq/" itemprop="url">未命名</a></h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -300,9 +305,7 @@
       
 
       
-        
-          
-            <p>本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：</p>
+        <p>本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：</p>
 <ul>
 <li><strong>Spring框架管理对象</strong></li>
 <li><strong>有消息需求，但不想维护mq中间件</strong></li>
@@ -353,8 +356,6 @@
 <p>文章并未贴出所有代码，gradle构建、jedisUtils以及一些配置等可以参考源码，源码只需要设置自己的redis配置即可。<br><a href="https://github.com/Yampery/rdsmq.git" target="_blank" rel="noopener">https://github.com/Yampery/rdsmq.git</a></p>
 </blockquote>
 
-          
-        
       
     </div>
     
@@ -371,384 +372,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/28/ykt_test_binding/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yampery">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="博文整理">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/28/ykt_test_binding/" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-28T17:30:22+08:00">
-                2018-04-28
-              </time>
+              <a href="/2018/04/28/ykt_test_binding/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <h1 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h1><hr>
-<h2 id="测试目标"><a href="#测试目标" class="headerlink" title="测试目标"></a>测试目标</h2><pre><code>1. 绑定接口性能：响应时长，并发量
-2. 历史表500w数据下事务的处理情况
-3. 压测过程线程状态
-4. 压测过程堆状态
-</code></pre><h2 id="当前状态"><a href="#当前状态" class="headerlink" title="当前状态"></a>当前状态</h2><pre><code>1. 号池总量：1000000
-2. T_REGINFO总量：20006
-3. T_REGINFOHIS总量：4884369
-</code></pre><h2 id="测试服务器"><a href="#测试服务器" class="headerlink" title="测试服务器"></a>测试服务器</h2><h3 id="系统版本"><a href="#系统版本" class="headerlink" title="系统版本"></a>系统版本</h3><pre><code>Linux testserver-centos 3.10.0-693.21.1.el7.x86_64 #1 SMP Wed Mar 7 19:03:37 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
-</code></pre><h3 id="CPU信息"><a href="#CPU信息" class="headerlink" title="CPU信息"></a>CPU信息</h3><pre><code>Intel(R) Xeon(R) CPU E5-2650 0 @ 2.00GHz    X32
-</code></pre><h3 id="内存信息"><a href="#内存信息" class="headerlink" title="内存信息"></a>内存信息</h3><pre><code>MemTotal:       16215504 kB
-MemFree:         5705052 kB
-MemAvailable:   10554240 kB
-Buffers:              28 kB
-Cached:          5565036 kB
-SwapCached:       518972 kB
-Active:          5504676 kB
-Inactive:        4168584 kB
-Active(anon):    2818640 kB
-Inactive(anon):  2020616 kB
-Active(file):    2686036 kB
-Inactive(file):  2147968 kB
-Unevictable:           0 kB
-Mlocked:               0 kB
-SwapTotal:       8126460 kB
-SwapFree:        6607556 kB
-Dirty:                84 kB
-Writeback:             0 kB
-AnonPages:       3626044 kB
-Mapped:           218624 kB
-Shmem:            731060 kB
-Slab:             564724 kB
-SReclaimable:     410288 kB
-SUnreclaim:       154436 kB
-KernelStack:       12608 kB
-PageTables:        77320 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:    16234212 kB
-Committed_AS:    7857184 kB
-VmallocTotal:   34359738367 kB
-VmallocUsed:      316296 kB
-VmallocChunk:   34350563324 kB
-HardwareCorrupted:     0 kB
-AnonHugePages:    110592 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:      363456 kB
-DirectMap2M:    14270464 kB
-DirectMap1G:     2097152 kB
-</code></pre><h2 id="数据服务器"><a href="#数据服务器" class="headerlink" title="数据服务器"></a>数据服务器</h2><h3 id="系统版本-1"><a href="#系统版本-1" class="headerlink" title="系统版本"></a>系统版本</h3><pre><code>Linux weihua2 2.6.32-573.18.1.el6.i686 #1 SMP Tue Feb 9 19:51:22 UTC 2016 i686 i686 i386 GNU/Linux
-</code></pre><h3 id="CPU信息-1"><a href="#CPU信息-1" class="headerlink" title="CPU信息"></a>CPU信息</h3><pre><code>Intel(R) Xeon(R) CPU E5-2650 0 @ 2.00GHz     X32
-</code></pre><h3 id="内存信息-1"><a href="#内存信息-1" class="headerlink" title="内存信息"></a>内存信息</h3><pre><code>MemTotal:        8130136 kB
-MemFree:         2471888 kB
-Buffers:          347776 kB
-Cached:           604844 kB
-SwapCached:        28720 kB
-Active:          4093188 kB
-Inactive:        1380972 kB
-Active(anon):    3596772 kB
-Inactive(anon):   926380 kB
-Active(file):     496416 kB
-Inactive(file):   454592 kB
-Unevictable:           0 kB
-Mlocked:               0 kB
-HighTotal:       7435208 kB
-HighFree:        2288728 kB
-LowTotal:         694928 kB
-LowFree:          183160 kB
-SwapTotal:       8273916 kB
-SwapFree:        8214956 kB
-Dirty:                28 kB
-Writeback:             0 kB
-AnonPages:       4493096 kB
-Mapped:            33680 kB
-Shmem:              1540 kB
-Slab:             102100 kB
-SReclaimable:      78500 kB
-SUnreclaim:        23600 kB
-KernelStack:        7672 kB
-PageTables:        14536 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:    12338984 kB
-Committed_AS:    5936384 kB
-VmallocTotal:     122880 kB
-VmallocUsed:        7400 kB
-VmallocChunk:      35868 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:       10232 kB
-DirectMap2M:      897024 kB
-</code></pre><h2 id="负载机"><a href="#负载机" class="headerlink" title="负载机"></a>负载机</h2><h3 id="系统版本-2"><a href="#系统版本-2" class="headerlink" title="系统版本"></a>系统版本</h3><pre><code>Linux weihua1 2.6.32-279.el6.i686 #1 SMP Fri Jun 22 10:59:55 UTC 2012 i686 i686 i386 GNU/Linux
-</code></pre><h3 id="cpu信息"><a href="#cpu信息" class="headerlink" title="cpu信息"></a>cpu信息</h3><pre><code>Intel(R) Xeon(R) CPU E5-2650 0 @ 2.00GHz  X32
-</code></pre><h3 id="内存信息-2"><a href="#内存信息-2" class="headerlink" title="内存信息"></a>内存信息</h3><pre><code>MemTotal:        8130520 kB
-MemFree:         5369356 kB
-Buffers:          256976 kB
-Cached:          2222852 kB
-SwapCached:         7724 kB
-Active:          1667240 kB
-Inactive:         853124 kB
-Active(anon):      15696 kB
-Inactive(anon):    26080 kB
-Active(file):    1651544 kB
-Inactive(file):   827044 kB
-Unevictable:           0 kB
-Mlocked:               0 kB
-HighTotal:       7435208 kB
-HighFree:        5249168 kB
-LowTotal:         695312 kB
-LowFree:          120188 kB
-SwapTotal:       8273912 kB
-SwapFree:        8201640 kB
-Dirty:              4080 kB
-Writeback:             0 kB
-AnonPages:         33944 kB
-Mapped:            14192 kB
-Shmem:              1240 kB
-Slab:             150052 kB
-SReclaimable:     130256 kB
-SUnreclaim:        19796 kB
-KernelStack:        6600 kB
-PageTables:         5184 kB
-NFS_Unstable:          0 kB
-Bounce:                0 kB
-WritebackTmp:          0 kB
-CommitLimit:    12339172 kB
-Committed_AS:     588200 kB
-VmallocTotal:     122880 kB
-VmallocUsed:        7064 kB
-VmallocChunk:      84064 kB
-HugePages_Total:       0
-HugePages_Free:        0
-HugePages_Rsvd:        0
-HugePages_Surp:        0
-Hugepagesize:       2048 kB
-DirectMap4k:       10232 kB
-DirectMap2M:      897024 kB
-</code></pre><h2 id="测试准备"><a href="#测试准备" class="headerlink" title="测试准备"></a>测试准备</h2><pre><code>1. 测试工具：jmeter 4.0；
-2. 测试数据：csv 100w；
-3. 线程组：500并发，60秒增长时间，600秒持续时间。
-</code></pre><h2 id="测试结果一"><a href="#测试结果一" class="headerlink" title="测试结果一"></a>测试结果一</h2><pre><code>未开启TIME_WAIT重用，FIN_WAIT_2状态时间为60
-</code></pre><h3 id="聚合分析"><a href="#聚合分析" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/dS29AV5.png" alt=""><br><img src="https://i.imgur.com/eJTZ9u2.png" alt=""></p>
-<h3 id="响应时长"><a href="#响应时长" class="headerlink" title="响应时长"></a>响应时长</h3><p><img src="https://i.imgur.com/2k9DUsY.png" alt=""></p>
-<h2 id="测试结果二"><a href="#测试结果二" class="headerlink" title="测试结果二"></a>测试结果二</h2><pre><code>开启TIME_WAIT重用，FIN_WAIT_2状态时间为30
-</code></pre><h3 id="聚合分析-1"><a href="#聚合分析-1" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/29x2Idw.png" alt=""><br><img src="https://i.imgur.com/4vLS2uA.png" alt=""></p>
-<h3 id="响应时长-1"><a href="#响应时长-1" class="headerlink" title="响应时长"></a>响应时长</h3><p><img src="https://i.imgur.com/ZMkoGuB.png" alt=""></p>
-<h1 id="数据库访问情况"><a href="#数据库访问情况" class="headerlink" title="数据库访问情况"></a>数据库访问情况</h1><hr>
-<h3 id="T-REGINFOHIS表"><a href="#T-REGINFOHIS表" class="headerlink" title="T_REGINFOHIS表"></a>T_REGINFOHIS表</h3><ul>
-<li>数据量：4884369</li>
-<li><p>表结构</p>
-<pre><code>CREATE TABLE `T_REGINFOHIS` (
-  `hisid` bigint(16) NOT NULL AUTO_INCREMENT,
-  `addtime` datetime DEFAULT NULL,
-  `opuidtype` char(1) DEFAULT NULL,
-  `uidnumber` varchar(16) DEFAULT NULL,
-  `regphone` varchar(32) DEFAULT NULL,
-  `subid` bigint(16) DEFAULT NULL,
-  `regtime` datetime NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;,
-  `regmodule` varchar(16) DEFAULT NULL,
-  `uidtype` varchar(8) DEFAULT NULL,
-  `callrestrict` varchar(8) DEFAULT NULL,
-  `callrecording` varchar(4) DEFAULT NULL,
-  `anucode` varchar(64) DEFAULT NULL,
-  `bnucode` varchar(64) DEFAULT NULL COMMENT &apos;被叫放音&apos;,
-  `calldisplay` varchar(16) DEFAULT NULL,
-  `productid` int(11) DEFAULT NULL,
-  `name` varchar(32) DEFAULT NULL,
-  `cardtype` varchar(32) DEFAULT NULL,
-  `cardno` varchar(32) DEFAULT NULL,
-  `calldisplaynouid` varchar(32) DEFAULT NULL,
-  `unitid` varchar(64) DEFAULT NULL,
-  `expiretime` datetime DEFAULT NULL,
-  `logid` bigint(10) DEFAULT NULL,
-  `uuidinpartner` varchar(64) DEFAULT NULL,
-  `batchworkid` varchar(36) DEFAULT NULL,
-  `opuser` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`hisid`,`regtime`),
-  KEY `ind_uidnumber` (`uidnumber`),
-  KEY `ind_regphone` (`regphone`),
-  KEY `ind_uuidinpartner` (`uuidinpartner`)
-) ENGINE=InnoDB AUTO_INCREMENT=5884370 DEFAULT CHARSET=utf8
-</code></pre></li>
-</ul>
-<h3 id="T-REGINFO表"><a href="#T-REGINFO表" class="headerlink" title="T_REGINFO表"></a>T_REGINFO表</h3><ul>
-<li>数据量：20006</li>
-<li><p>表结构</p>
-<pre><code>CREATE TABLE `T_REGINFO` (
-  `uidnumber` varchar(16) DEFAULT NULL,
-  `regphone` varchar(32) DEFAULT NULL,
-  `subid` bigint(16) NOT NULL AUTO_INCREMENT,
-  `regtime` datetime DEFAULT NULL,
-  `regmodule` varchar(16) DEFAULT NULL,
-  `uidtype` varchar(8) DEFAULT NULL,
-  `callrestrict` varchar(8) DEFAULT NULL,
-  `callrecording` varchar(4) DEFAULT NULL,
-  `anucode` varchar(64) DEFAULT NULL,
-  `bnucode` varchar(64) DEFAULT NULL COMMENT &apos;被叫放音&apos;,
-  `calldisplay` varchar(16) DEFAULT NULL,
-  `productid` int(11) DEFAULT NULL,
-  `name` varchar(32) DEFAULT NULL,
-  `cardtype` varchar(32) DEFAULT NULL,
-  `cardno` varchar(32) DEFAULT NULL,
-  `calldisplaynouid` varchar(16) DEFAULT NULL,
-  `unitid` varchar(16) DEFAULT NULL,
-  `expiretime` datetime DEFAULT NULL,
-  `uuidinpartner` varchar(64) DEFAULT NULL,
-  `batchworkid` varchar(36) DEFAULT &apos;&apos;,
-  `opuser` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`subid`),
-  KEY `ind_reginfo_batchworkid` (`batchworkid`) USING BTREE,
-  KEY `ind_reginfo_uuidinpartner` (`uuidinpartner`) USING BTREE,
-  KEY `ind_reginfo_uidnumber` (`uidnumber`),
-  KEY `ind_reginfo_regphone` (`regphone`)
-) ENGINE=InnoDB AUTO_INCREMENT=3452188 DEFAULT CHARSET=utf8;
-</code></pre></li>
-</ul>
-<hr>
-<h3 id="sql语句"><a href="#sql语句" class="headerlink" title="sql语句"></a>sql语句</h3><ul>
-<li><p>写入T_REGINFOHIS</p>
-<pre><code>INSERT INTO T_REGINFOHIS (hisid, addtime, opuidtype, uidnumber, regphone
-, subid, regtime, regmodule, uidtype, callrestrict
-, callrecording, anucode, bnucode, calldisplay, productid
-, name, cardtype, cardno, calldisplaynouid, unitid
-, expiretime, logid, uuidinpartner, batchworkid, opuser)
-VALUES (?, now(), ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?)
-</code></pre></li>
-<li><p>写入T_REGINFO</p>
-<pre><code>INSERT INTO T_REGINFO (subid, uidnumber, regphone, regtime, regmodule
-, uidtype, callrestrict, callrecording, anucode, bnucode
-, calldisplay, productid, name, cardtype, cardno
-, calldisplaynouid, unitid, expiretime, uuidinpartner, batchworkid
-, opuser)
-VALUES (?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?, ?, ?, ?, ?
-, ?)
-</code></pre></li>
-</ul>
-<hr>
-<h3 id="sql统计结果"><a href="#sql统计结果" class="headerlink" title="sql统计结果"></a>sql统计结果</h3><table style="table-layout:auto"><br>    <tr><br>        <td>用例</td><br>        <td>执行数</td><br>        <td>执行时间</td><br>        <td>最慢</td><br>        <td>时间分布</td><br>        <td>平均时间</td><br>    </tr><br>    <tr><br>        <td>写入T_REGINFOHIS</td><br>        <td>1,000,000</td><br>        <td>33,850,801</td><br>        <td>8,945</td><br>        <td>[310988,441162,157808,86465,3577,0,0,0]</td><br>        <td>33.9</td><br>    </tr><br>    <tr><br>        <td>写入T_REGINFO</td><br>        <td>1,000,000</td><br>        <td>37,210,288</td><br>        <td>8,906</td><br>        <td>[403461,337974,188582,64237,5746,0,0,0]</td><br>        <td>37.2</td><br>    </tr><br></table>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -758,138 +403,11 @@ VALUES (?, ?, ?, ?, ?
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/11/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yampery">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="博文整理">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/11/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-11T08:54:16+08:00">
-                2018-04-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -897,6 +415,10 @@ VALUES (?, ?, ?, ?, ?
 
 
           
+
+  
+
+
 
         </div>
         
@@ -917,8 +439,17 @@ VALUES (?, ?, ?, ?, ?
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -983,6 +514,22 @@ VALUES (?, ?, ?, ?, ?
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-设计方案"><span class="nav-number">1.</span> <span class="nav-text">1. 设计方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-代码实现"><span class="nav-number">2.</span> <span class="nav-text">2. 代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-技术说明"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 技术说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-核心代码"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 核心代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-Message对象"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 Message对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-Route-消息路由器"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 Route(消息路由器)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-RedisMq-消息队列"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3 RedisMq(消息队列)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-RedisMq消息队列配置："><span class="nav-number">2.2.4.</span> <span class="nav-text">2.2.4 RedisMq消息队列配置：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-5-消费者"><span class="nav-number">2.2.5.</span> <span class="nav-text">2.2.5 消费者</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-测试"><span class="nav-number">3.</span> <span class="nav-text">4. 测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-总结"><span class="nav-number">4.</span> <span class="nav-text">3. 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-源码连接"><span class="nav-number">5.</span> <span class="nav-text">4. 源码连接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1116,6 +663,10 @@ VALUES (?, ?, ?, ?, ?
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
