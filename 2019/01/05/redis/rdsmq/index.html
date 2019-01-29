@@ -73,6 +73,8 @@
 
 
 
+  
+
 
   <link rel="alternate" href="/atom.xml" title="博文整理" type="application/atom+xml" />
 
@@ -84,7 +86,7 @@
 <meta name="description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，按照s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于Redis的消息队列">
-<meta property="og:url" content="http://yoursite.com/2018/04/28/redis/rdsmq/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/01/05/redis/rdsmq/index.html">
 <meta property="og:site_name" content="博文整理">
 <meta property="og:description" content="本文以redis为数据结构基础，配合Spring管理机制，使用java实现了一个轻量级、可配置的消息队列。适合的项目特点：  Spring框架管理对象 有消息需求，但不想维护mq中间件 有使用redis 对消息持久化并没有很苛刻的要求  需要使用rabbitmq实现延迟消息请参考这里  设计方案设计主要包含以下几点：  将整个Redis当做消息池，以kv形式存储消息 使用ZSET做优先队列，按照s">
 <meta property="og:locale" content="zh-Hans">
@@ -123,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/04/28/redis/rdsmq/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/01/05/redis/rdsmq/"/>
 
 
 
@@ -236,7 +238,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/28/redis/rdsmq/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/redis/rdsmq/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Yampery">
@@ -265,8 +267,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-28T17:54:39+08:00">
-                2018-04-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-05T14:47:07+08:00">
+                2019-01-05
               </time>
             
 
@@ -377,8 +379,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/04/28/ykt_test_binding/" rel="next" title="性能测试">
-                <i class="fa fa-chevron-left"></i> 性能测试
+              <a href="/2019/01/05/offer/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
               </a>
             
           </div>
@@ -386,10 +388,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/17/offer/" rel="prev" title="Hello World">
-                Hello World <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -546,7 +544,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
