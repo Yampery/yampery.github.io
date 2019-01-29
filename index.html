@@ -308,15 +308,15 @@
 <hr>
 <h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><ul>
 <li><p>最常使用的是集群间copy</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp hdfs://nn1:8020/foo/bar hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp hdfs://nn1:8020/foo/bar hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>该命令会将nn1下的<code>/foo/bar</code>放在一个临时文件里，并将内容分割为一系列<code>map tasts</code>，</p>
 </blockquote>
 <p>  然后在每一个<code>NodeManage</code>r上从nn1向nn2拷贝。</p>
 <p>  也可在命令行指定多个源文件</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp hdfs://nn1:8020/foo/a </span><br><span class="line">   hdfs://nn1:8020/foo/b </span><br><span class="line">   hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp hdfs://nn1:8020/foo/a </span><br><span class="line">   hdfs://nn1:8020/foo/b </span><br><span class="line">   hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
 <p>  同样的，使用-f指定文件，<code>srclist</code>包含a和b</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp -f hdfs://nn1:8020/srclist </span><br><span class="line">  	hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp -f hdfs://nn1:8020/srclist </span><br><span class="line">  	hdfs://nn2:8020/bar/foo</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>在多源<code>copy</code>中，如果源文件冲突，<code>distCp</code>将会终止并发送错误报告，而在目标上的冲突将会根据指定的选项（<code>option</code>）处理。默认情况下，跳过目标集群已经存在的文件而不是替换，跳过文件的数量将会在任务结束的时候报告。不过，如果存在copy任务失败，后续重试成功的情况，任务最终报告的跳过文件的数量将会不准确。</p>
 </blockquote>
@@ -341,97 +341,54 @@ hdfs://nn1:8020/source/first/2
 hdfs://nn1:8020/source/second/10
 hdfs://nn1:8020/source/second/20
 </code></pre><p>   当distCp没有使用<code>-update</code> or <code>-overwrite</code>, distCp 默认将会在<code>/target</code>下创建 <code>first/</code> 和 <code>second/</code>，例如:</p>
-<pre><code>distcp hdfs://nn1:8020/source/first hdfs://nn1:8020/source/second hdfs://nn2:8020/target
-</code></pre></li>
+<pre><code><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">distcp hdfs://nn1:8020/<span class="built_in">source</span>/first hdfs://nn1:8020/<span class="built_in">source</span>/second hdfs://nn2:8020/target</span><br></pre></td></tr></table></figure>
+</code></pre><p>  在目标文件夹<code>/target</code>下产生以下内容：</p>
+<pre><code> hdfs://nn2:8020/target/first/1
+ hdfs://nn2:8020/target/first/2
+ hdfs://nn2:8020/target/second/10
+ hdfs://nn2:8020/target/second/20
+
+当指定 `-update` 或 `-overwrite`, 会将源目录下的内容copy到目标下, 而不是源目录，例如:
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">distcp -update hdfs://nn1:8020/<span class="built_in">source</span>/first hdfs://nn1:8020/<span class="built_in">source</span>/second hdfs://nn2:8020/target</span><br></pre></td></tr></table></figure>
+</code></pre><p>  在目标文件夹<code>/target</code>下产生以下内容：</p>
+<pre><code>hdfs://nn2:8020/target/1
+hdfs://nn2:8020/target/2
+hdfs://nn2:8020/target/10
+hdfs://nn2:8020/target/20
+</code></pre><p>  <strong>如果所有源文件都包含同一个文件(如, <code>0</code>)，那所有的源文件都会在目标文件映射一个 <code>/target/0</code> 的实体，DistCp将会失败。</strong></p>
+<p>  考虑如下copy操作</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">distcp hdfs://nn1:8020/<span class="built_in">source</span>/first hdfs://nn1:8020/<span class="built_in">source</span>/second hdfs://nn2:8020/target</span><br></pre></td></tr></table></figure>
+<p>  源集群上源文件/大小</p>
+<pre><code>hdfs://nn1:8020/source/first/1 32
+hdfs://nn1:8020/source/first/2 32
+hdfs://nn1:8020/source/second/10 64
+hdfs://nn1:8020/source/second/20 32
+</code></pre><p>  目标集群上文件/大小</p>
+<pre><code>hdfs://nn2:8020/target/1 32
+hdfs://nn2:8020/target/10 32
+hdfs://nn2:8020/target/20 64
+</code></pre><p>  将会导致</p>
+<pre><code>hdfs://nn2:8020/target/1 32
+hdfs://nn2:8020/target/2 32
+hdfs://nn2:8020/target/10 64
+hdfs://nn2:8020/target/20 32
+</code></pre><ul>
+<li><code>1</code> 由于大小和内容一致，将会跳过；</li>
+<li><code>2</code> 由于不存在，将会直接copy；</li>
+<li><code>10</code> 和 <code>20</code> 由于内容不一致，将会覆盖；</li>
+<li>如果使用 <code>-update</code>, <code>1</code> 也会被覆盖。</li>
 </ul>
-<pre><code>在目标文件夹`/target`下产生以下内容：
-    hdfs://nn2:8020/target/first/1
-    hdfs://nn2:8020/target/first/2
-    hdfs://nn2:8020/target/second/10
-    hdfs://nn2:8020/target/second/20
-
-   当指定 `-update` 或 `-overwrite`, 会将源目录下的内容copy到目标下, 而不是源目录，例如:
-
-    distcp -update hdfs://nn1:8020/source/first hdfs://nn1:8020/source/second hdfs://nn2:8020/target
-
-在目标文件夹`/target`下产生以下内容：
-
-    hdfs://nn2:8020/target/1
-    hdfs://nn2:8020/target/2
-    hdfs://nn2:8020/target/10
-    hdfs://nn2:8020/target/20
-
-**如果所有源文件都包含同一个文件(如, `0`)，那所有的源文件都会在目标文件映射一个 `/target/0` 的实体，DistCp将会失败。**
-
-考虑如下copy操作
-
-    distcp hdfs://nn1:8020/source/first hdfs://nn1:8020/source/second hdfs://nn2:8020/target
-
-源集群上源文件/大小
-
-    hdfs://nn1:8020/source/first/1 32
-    hdfs://nn1:8020/source/first/2 32
-    hdfs://nn1:8020/source/second/10 64
-    hdfs://nn1:8020/source/second/20 32
-
-目标集群上文件/大小
-
-    hdfs://nn2:8020/target/1 32
-    hdfs://nn2:8020/target/10 32
-    hdfs://nn2:8020/target/20 64
-
-将会导致
-
-    hdfs://nn2:8020/target/1 32
-    hdfs://nn2:8020/target/2 32
-    hdfs://nn2:8020/target/10 64
-    hdfs://nn2:8020/target/20 32
-- `1` 由于大小和内容一致，将会跳过；
-- `2` 由于不存在，将会直接copy；
-- `10` 和 `20` 由于内容不一致，将会覆盖；
-- 如果使用 `-update`, `1` 也会被覆盖。
-</code></pre><hr>
+</li>
+</ul>
+<hr>
 <h2 id="DistCp体系结构"><a href="#DistCp体系结构" class="headerlink" title="DistCp体系结构"></a>DistCp体系结构</h2><p>DistCp主要有以下三个组件组成:</p>
 <ul>
 <li>DistCp Driver</li>
 <li>Copy-listing generator</li>
 <li>Input-formats 和 Map-Reduce components</li>
 </ul>
-<h3 id="DistCp-Driver"><a href="#DistCp-Driver" class="headerlink" title="DistCp Driver"></a>DistCp Driver</h3><pre><code>// 构造方法，根据输入的参数创建DistCp
-public DistCp(Configuration configuration, DistCpOptions inputOptions) throws Exception {
-    Configuration config = new Configuration(configuration);
-    config.addResource(DISTCP_DEFAULT_XML);
-    setConf(config);
-    this.inputOptions = inputOptions;
-    this.metaFolder   = createMetaFolderPath();
-}
-
-/**
- * 实现 Tool::run(). 组织源文件拷贝到目标位置
- *  1. 创建将要拷贝到目标的文件列表
- *  2. 运行Map任务. (委托给 execute().)
- * @param argv List of arguments passed to DistCp, from the ToolRunner.
- * @return On success, it returns 0. Else, -1.
- */
-public int run(String[] argv) {
-    if (argv.length &lt; 1) {
-      OptionsParser.usage();
-      return DistCpConstants.INVALID_ARGUMENT;
-    }
-
-    try {
-      inputOptions = (OptionsParser.parse(argv));
-      setTargetPathExists();
-      LOG.info(&quot;Input Options: &quot; + inputOptions);
-    } catch (Throwable e) {
-      LOG.error(&quot;Invalid arguments: &quot;, e);
-      System.err.println(&quot;Invalid arguments: &quot; + e.getMessage());
-      OptionsParser.usage();      
-      return DistCpConstants.INVALID_ARGUMENT;
-    }
-    ......
-}
-</code></pre><p>  DistCp Driver 组件负责以下内容:</p>
+<h3 id="DistCp-Driver"><a href="#DistCp-Driver" class="headerlink" title="DistCp Driver"></a>DistCp Driver</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造方法，根据输入的参数创建DistCp</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">DistCp</span><span class="params">(Configuration configuration, DistCpOptions inputOptions)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Configuration config = <span class="keyword">new</span> Configuration(configuration);</span><br><span class="line">    config.addResource(DISTCP_DEFAULT_XML);</span><br><span class="line">    setConf(config);</span><br><span class="line">    <span class="keyword">this</span>.inputOptions = inputOptions;</span><br><span class="line">    <span class="keyword">this</span>.metaFolder   = createMetaFolderPath();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 实现 Tool::run(). 组织源文件拷贝到目标位置</span></span><br><span class="line"><span class="comment"> *  1. 创建将要拷贝到目标的文件列表</span></span><br><span class="line"><span class="comment"> *  2. 运行Map任务. (委托给 execute().)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> argv List of arguments passed to DistCp, from the ToolRunner.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> On success, it returns 0. Else, -1.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">run</span><span class="params">(String[] argv)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (argv.length &lt; <span class="number">1</span>) &#123;</span><br><span class="line">      OptionsParser.usage();</span><br><span class="line">      <span class="keyword">return</span> DistCpConstants.INVALID_ARGUMENT;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      inputOptions = (OptionsParser.parse(argv));</span><br><span class="line">      setTargetPathExists();</span><br><span class="line">      LOG.info(<span class="string">"Input Options: "</span> + inputOptions);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">      LOG.error(<span class="string">"Invalid arguments: "</span>, e);</span><br><span class="line">      System.err.println(<span class="string">"Invalid arguments: "</span> + e.getMessage());</span><br><span class="line">      OptionsParser.usage();      </span><br><span class="line">      <span class="keyword">return</span> DistCpConstants.INVALID_ARGUMENT;</span><br><span class="line">    &#125;</span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  DistCp Driver 组件负责以下内容:</p>
 <ul>
 <li><p>将命令行命令参数解析传给DistCp, 通过:</p>
 <ul>
@@ -476,163 +433,27 @@ public int run(String[] argv) {
  从指定的文件中读取Source-paths, 然后发送给GlobbedCopyListing，像上面一样构造listing。
 
 GlobbedCopyListing构造listing如下：
-
-      /**
-       * 实现 CopyListing::buildListing().
-       * Creates the copy listing by &quot;globbing&quot; all source-paths.
-       * @param pathToListingFile The location at which the copy-listing file
-       *                           is to be created.
-       * @param options Input Options for DistCp (indicating source/target paths.)
-       * @throws IOException
-       */
-      @Override
-      public void doBuildListing(Path pathToListingFile,
-                                 DistCpOptions options) throws IOException {
-
-        List&lt;Path&gt; globbedPaths = new ArrayList&lt;Path&gt;();
-        if (options.getSourcePaths().isEmpty()) {
-          throw new InvalidInputException(&quot;Nothing to process. Source paths::EMPTY&quot;);  
-        }
-
-        for (Path p : options.getSourcePaths()) {
-          FileSystem fs = p.getFileSystem(getConf());
-          FileStatus[] inputs = fs.globStatus(p);
-
-          if(inputs != null &amp;&amp; inputs.length &gt; 0) {
-            for (FileStatus onePath: inputs) {
-              globbedPaths.add(onePath.getPath());
-            }
-          } else {
-            throw new InvalidInputException(p + &quot; doesn&apos;t exist&quot;);        
-          }
-        }
-
-        DistCpOptions optionsGlobbed = new DistCpOptions(options);
-        optionsGlobbed.setSourcePaths(globbedPaths);
-        simpleListing.buildListing(pathToListingFile, optionsGlobbed);
-      }
-</code></pre><h3 id="InputFormats-和-MapReduce-组件"><a href="#InputFormats-和-MapReduce-组件" class="headerlink" title="InputFormats 和 MapReduce 组件"></a>InputFormats 和 MapReduce 组件</h3><p>  这两个组件负责实际上从源到目标的文件复制。当copy开始实行时，在copy-listing时生成的listing-file此时将被消费。</p>
+</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doBuildListing</span><span class="params">(Path pathToListingFile,</span></span></span><br><span class="line"><span class="function"><span class="params">                           DistCpOptions options)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">  List&lt;Path&gt; globbedPaths = <span class="keyword">new</span> ArrayList&lt;Path&gt;();</span><br><span class="line">  <span class="keyword">if</span> (options.getSourcePaths().isEmpty()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidInputException(<span class="string">"Nothing to process. Source paths::EMPTY"</span>);  </span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (Path p : options.getSourcePaths()) &#123;</span><br><span class="line">    FileSystem fs = p.getFileSystem(getConf());</span><br><span class="line">    FileStatus[] inputs = fs.globStatus(p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(inputs != <span class="keyword">null</span> &amp;&amp; inputs.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">for</span> (FileStatus onePath: inputs) &#123;</span><br><span class="line">        globbedPaths.add(onePath.getPath());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> InvalidInputException(p + <span class="string">" doesn't exist"</span>);        </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  DistCpOptions optionsGlobbed = <span class="keyword">new</span> DistCpOptions(options);</span><br><span class="line">  optionsGlobbed.setSourcePaths(globbedPaths);</span><br><span class="line">  simpleListing.buildListing(pathToListingFile, optionsGlobbed);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="InputFormats-和-MapReduce-组件"><a href="#InputFormats-和-MapReduce-组件" class="headerlink" title="InputFormats 和 MapReduce 组件"></a>InputFormats 和 MapReduce 组件</h3><p>  这两个组件负责实际上从源到目标的文件复制。当copy开始实行时，在copy-listing时生成的listing-file此时将被消费。</p>
 <blockquote>
 <p>Hadoop中，InputFormat接口定义的方法就是如何读取文件和分割文件以提供分片给mapper。<br>InputSplit算是Hadoop的一种存储格式，是Hadoop定义的用来传送给每个单独的map的数据，InputSplit存储的并非数据本身，而是一个分片长度和一个记录数据位置的数组。生成InputSplit的方法可以通过InputFormat来设置。</p>
 </blockquote>
 <ul>
 <li><strong>UniformSizeInputFormat:</strong><br>实现了 <code>org.apache.hadoop.mapreduce.InputFormat</code>. UniformSizeInputFormat的宗旨是使每个map任务大约有相同的字节数量。<br>通过配置文件确定map数量和每个map任务的字节数，map数量通过JobContex配置，总copy字节数通过DistCp常量配置。</li>
 </ul>
-<pre><code>private List&lt;InputSplit&gt; getSplits(Configuration configuration, int numSplits,
-                           long totalSizeBytes) throws IOException {
-  List&lt;InputSplit&gt; splits = new ArrayList&lt;InputSplit&gt;(numSplits);
-  long nBytesPerSplit = (long) Math.ceil(totalSizeBytes * 1.0 / numSplits);
-
-  CopyListingFileStatus srcFileStatus = new CopyListingFileStatus();
-  Text srcRelPath = new Text();
-  long currentSplitSize = 0;
-  long lastSplitStart = 0;
-  long lastPosition = 0;
-
-  final Path listingFilePath = getListingFilePath(configuration);
-
-  if (LOG.isDebugEnabled()) {
-    LOG.debug(&quot;Average bytes per map: &quot; + nBytesPerSplit +
-        &quot;, Number of maps: &quot; + numSplits + &quot;, total size: &quot; + totalSizeBytes);
-  }
-  SequenceFile.Reader reader=null;
-  try {
-    reader = getListingFileReader(configuration);
-    while (reader.next(srcRelPath, srcFileStatus)) {
-      // 如果添加该文件导致每个map超出了最大字节数限制，将当前文件添加到新的split
-      if (currentSplitSize + srcFileStatus.getLen() &gt; nBytesPerSplit &amp;&amp; lastPosition != 0) {
-        FileSplit split = new FileSplit(listingFilePath, lastSplitStart,
-            lastPosition - lastSplitStart, null);
-        if (LOG.isDebugEnabled()) {
-          LOG.debug (&quot;Creating split : &quot; + split + &quot;, bytes in split: &quot; + currentSplitSize);
-        }
-        splits.add(split);
-        lastSplitStart = lastPosition;
-        currentSplitSize = 0;
-      }
-      currentSplitSize += srcFileStatus.getLen();
-      lastPosition = reader.getPosition();
-    }
-    if (lastPosition &gt; lastSplitStart) {
-      FileSplit split = new FileSplit(listingFilePath, lastSplitStart,
-          lastPosition - lastSplitStart, null);
-      if (LOG.isDebugEnabled()) {
-        LOG.info (&quot;Creating split : &quot; + split + &quot;, bytes in split: &quot; + currentSplitSize);
-      }
-      splits.add(split);
-    }
-
-  } finally {
-    IOUtils.closeStream(reader);
-  }
-
-  return splits;
-}
+<pre><code><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;InputSplit&gt; <span class="title">getSplits</span><span class="params">(Configuration configuration, <span class="keyword">int</span> numSplits, <span class="keyword">long</span> totalSizeBytes)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">            List&lt;InputSplit&gt; splits = <span class="keyword">new</span> ArrayList&lt;InputSplit&gt;(numSplits);</span><br><span class="line">              <span class="keyword">long</span> nBytesPerSplit = (<span class="keyword">long</span>) Math.ceil(totalSizeBytes * <span class="number">1.0</span> / numSplits);</span><br><span class="line">          </span><br><span class="line">              CopyListingFileStatus srcFileStatus = <span class="keyword">new</span> CopyListingFileStatus();</span><br><span class="line">              Text srcRelPath = <span class="keyword">new</span> Text();</span><br><span class="line">              <span class="keyword">long</span> currentSplitSize = <span class="number">0</span>;</span><br><span class="line">              <span class="keyword">long</span> lastSplitStart = <span class="number">0</span>;</span><br><span class="line">              <span class="keyword">long</span> lastPosition = <span class="number">0</span>;</span><br><span class="line">          </span><br><span class="line">              <span class="keyword">final</span> Path listingFilePath = getListingFilePath(configuration);</span><br><span class="line">          </span><br><span class="line">              <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">                LOG.debug(<span class="string">"Average bytes per map: "</span> + nBytesPerSplit +</span><br><span class="line">                    <span class="string">", Number of maps: "</span> + numSplits + <span class="string">", total size: "</span> + totalSizeBytes);</span><br><span class="line">              &#125;</span><br><span class="line">              SequenceFile.Reader reader=<span class="keyword">null</span>;</span><br><span class="line">              <span class="keyword">try</span> &#123;</span><br><span class="line">                reader = getListingFileReader(configuration);</span><br><span class="line">                <span class="keyword">while</span> (reader.next(srcRelPath, srcFileStatus)) &#123;</span><br><span class="line">                  <span class="comment">// 如果添加该文件导致每个map超出了最大字节数限制，将当前文件添加到新的split</span></span><br><span class="line">                  <span class="keyword">if</span> (currentSplitSize + srcFileStatus.getLen() &gt; nBytesPerSplit &amp;&amp; lastPosition != <span class="number">0</span>) &#123;</span><br><span class="line">                    FileSplit split = <span class="keyword">new</span> FileSplit(listingFilePath, lastSplitStart,</span><br><span class="line">                        lastPosition - lastSplitStart, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">                      LOG.debug (<span class="string">"Creating split : "</span> + split + <span class="string">", bytes in split: "</span> + currentSplitSize);</span><br><span class="line">                    &#125;</span><br><span class="line">                    splits.add(split);</span><br><span class="line">                    lastSplitStart = lastPosition;</span><br><span class="line">                    currentSplitSize = <span class="number">0</span>;</span><br><span class="line">                  &#125;</span><br><span class="line">                  currentSplitSize += srcFileStatus.getLen();</span><br><span class="line">                  lastPosition = reader.getPosition();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (lastPosition &gt; lastSplitStart) &#123;</span><br><span class="line">                  FileSplit split = <span class="keyword">new</span> FileSplit(listingFilePath, lastSplitStart,</span><br><span class="line">                      lastPosition - lastSplitStart, <span class="keyword">null</span>);</span><br><span class="line">                  <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">                    LOG.info (<span class="string">"Creating split : "</span> + split + <span class="string">", bytes in split: "</span> + currentSplitSize);</span><br><span class="line">                  &#125;</span><br><span class="line">                  splits.add(split);</span><br><span class="line">                &#125;</span><br><span class="line">          </span><br><span class="line">              &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                IOUtils.closeStream(reader);</span><br><span class="line">              &#125;</span><br><span class="line">          </span><br><span class="line">              <span class="keyword">return</span> splits;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
 </code></pre><ul>
 <li><p><strong>DynamicInputFormat and DynamicRecordReader:</strong><br>DynamicInputFormat 实现了 <code>org.apache.hadoop.mapreduce.InputFormat</code>，<br>在DFS上将copy-list分成一个个chunk，创建一系列splits，每个split根据自己的能力消费chunks，这种模式可以避免最慢的mapper拖累整个任务。</p>
-<pre><code> private List&lt;InputSplit&gt; createSplits(JobContext jobContext,
-                                List&lt;DynamicInputChunk&gt; chunks)
-    throws IOException {
-    int numMaps = getNumMapTasks(jobContext.getConfiguration());
-
-    final int nSplits = Math.min(numMaps, chunks.size());
-    List&lt;InputSplit&gt; splits = new ArrayList&lt;InputSplit&gt;(nSplits);
-
-    for (int i=0; i&lt; nSplits; ++i) {
-      TaskID taskId = new TaskID(jobContext.getJobID(), TaskType.MAP, i);
-      chunks.get(i).assignTo(taskId);
-      splits.add(new FileSplit(chunks.get(i).getPath(), 0,
-          // Setting non-zero length for FileSplit size, to avoid a possible
-          // future when 0-sized file-splits are considered &quot;empty&quot; and skipped
-          // over.
-          getMinRecordsPerChunk(jobContext.getConfiguration()),
-          null));
-    }
-    DistCpUtils.publish(jobContext.getConfiguration(),
-                        CONF_LABEL_NUM_SPLITS, splits.size());
-    return splits;
-}
-</code></pre><p>DynamicRecordReader 配合DynamicInputFormat实现一种’Worker-pattern’复制，保证能者多劳，主要干两件事：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> List&lt;InputSplit&gt; <span class="title">createSplits</span><span class="params">(JobContext jobContext,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      List&lt;DynamicInputChunk&gt; chunks)</span></span></span><br><span class="line"><span class="function">	<span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> numMaps = getNumMapTasks(jobContext.getConfiguration());</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> nSplits = Math.min(numMaps, chunks.size());</span><br><span class="line">	List&lt;InputSplit&gt; splits = <span class="keyword">new</span> ArrayList&lt;InputSplit&gt;(nSplits);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt; nSplits; ++i) &#123;</span><br><span class="line">	  TaskID taskId = <span class="keyword">new</span> TaskID(jobContext.getJobID(), TaskType.MAP, i);</span><br><span class="line">	  chunks.get(i).assignTo(taskId);</span><br><span class="line">	  splits.add(<span class="keyword">new</span> FileSplit(chunks.get(i).getPath(), <span class="number">0</span>,</span><br><span class="line">	      <span class="comment">// Setting non-zero length for FileSplit size, to avoid a possible</span></span><br><span class="line">	      <span class="comment">// future when 0-sized file-splits are considered "empty" and skipped</span></span><br><span class="line">	      <span class="comment">// over.</span></span><br><span class="line">	      getMinRecordsPerChunk(jobContext.getConfiguration()),</span><br><span class="line">	      <span class="keyword">null</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	DistCpUtils.publish(jobContext.getConfiguration(),</span><br><span class="line">	                    CONF_LABEL_NUM_SPLITS, splits.size());</span><br><span class="line">	<span class="keyword">return</span> splits;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>DynamicRecordReader 配合DynamicInputFormat实现一种’Worker-pattern’复制，保证能者多劳，主要干两件事：</p>
 <ol>
 <li>将每个chunk的内容递交给DistCp的mapper；</li>
-<li><p>当当前chunk消费完后，立即获取下一个chunk。  </p>
-<pre><code>public boolean nextKeyValue()
-  throws IOException, InterruptedException {
-
-    if (chunk == null) {
-      if (LOG.isDebugEnabled())
-        LOG.debug(taskId + &quot;: RecordReader is null. No records to be read.&quot;);
-      return false;
-    }
-
-    if (chunk.getReader().nextKeyValue()) {
-      ++numRecordsProcessedByThisMap;
-      return true;
-    }
-
-    if (LOG.isDebugEnabled())
-      LOG.debug(taskId + &quot;: Current chunk exhausted. &quot; +
-                         &quot; Attempting to pick up new one.&quot;);
-
-    chunk.release();
-    timeOfLastChunkDirScan = System.currentTimeMillis();
-    isChunkDirAlreadyScanned = false;
-
-    chunk = chunkContext.acquire(taskAttemptContext);
-
-    if (chunk == null) return false;
-
-    if (chunk.getReader().nextKeyValue()) {
-      ++numRecordsProcessedByThisMap;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-</code></pre></li>
+<li>当当前chunk消费完后，立即获取下一个chunk。  </li>
 </ol>
 </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">nextKeyValue</span><span class="params">()</span></span></span><br><span class="line"><span class="function">      <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">	    <span class="keyword">if</span> (chunk == <span class="keyword">null</span>) &#123;</span><br><span class="line">	      <span class="keyword">if</span> (LOG.isDebugEnabled())</span><br><span class="line">	        LOG.debug(taskId + <span class="string">": RecordReader is null. No records to be read."</span>);</span><br><span class="line">	      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	</span><br><span class="line">	    <span class="keyword">if</span> (chunk.getReader().nextKeyValue()) &#123;</span><br><span class="line">	      ++numRecordsProcessedByThisMap;</span><br><span class="line">	      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	</span><br><span class="line">	    <span class="keyword">if</span> (LOG.isDebugEnabled())</span><br><span class="line">	      LOG.debug(taskId + <span class="string">": Current chunk exhausted. "</span> +</span><br><span class="line">	                         <span class="string">" Attempting to pick up new one."</span>);</span><br><span class="line">	</span><br><span class="line">	    chunk.release();</span><br><span class="line">	    timeOfLastChunkDirScan = System.currentTimeMillis();</span><br><span class="line">	    isChunkDirAlreadyScanned = <span class="keyword">false</span>;</span><br><span class="line">	    </span><br><span class="line">	    chunk = chunkContext.acquire(taskAttemptContext);</span><br><span class="line">	</span><br><span class="line">	    <span class="keyword">if</span> (chunk == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	</span><br><span class="line">	    <span class="keyword">if</span> (chunk.getReader().nextKeyValue()) &#123;</span><br><span class="line">	      ++numRecordsProcessedByThisMap;</span><br><span class="line">	      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">else</span> &#123;</span><br><span class="line">	      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">  	&#125;</span><br></pre></td></tr></table></figure>
+<ul>
 <li><p><strong>CopyMapper:</strong><br>实现 <code>Mapper</code>, 该类实现物理上的文件拷贝. 输入路径，参照指定参数决定是否拷贝文件. 只有出现以下情形之一，文件才会被拷贝:</p>
 <ul>
 <li>目标不存在同名文件；</li>
@@ -670,144 +491,31 @@ GlobbedCopyListing构造listing如下：
 <hr>
 <h1 id="从源码理解DistCp"><a href="#从源码理解DistCp" class="headerlink" title="从源码理解DistCp"></a>从源码理解DistCp</h1><h2 id="DistCp"><a href="#DistCp" class="headerlink" title="DistCp"></a>DistCp</h2><p>DistCp实现Tool，这样可以使用ToolRunner调度。ToolRunner调度器执行时，调用DistCp的run()方法，一切从这里开始。</p>
 <p>阅读DistCp的构造器，首先在DistCp初始化时处理了配置、命令参数等。</p>
-<pre><code>public DistCp(Configuration configuration, DistCpOptions inputOptions) throws Exception {
-    Configuration config = new Configuration(configuration);
-    config.addResource(DISTCP_DEFAULT_XML);
-    setConf(config);
-    this.inputOptions = inputOptions;
-    this.metaFolder   = createMetaFolderPath();
-}
-</code></pre><p>run()是一个调度方法，调起execute()，校验输入、处理异常等，</p>
-<pre><code>// 调度方法，省掉了部分catch
-@Override
-public int run(String[] argv) {
-    if (argv.length &lt; 1) {
-      OptionsParser.usage();
-      return DistCpConstants.INVALID_ARGUMENT;
-    }
-
-    try {
-      inputOptions = (OptionsParser.parse(argv));
-      setTargetPathExists();
-      LOG.info(&quot;Input Options: &quot; + inputOptions);
-    } catch (Throwable e) {
-
-    }
-
-    try {
-      execute(); // 调用执行
-    } catch (Exception e) {
-      LOG.error(&quot;Exception encountered &quot;, e);
-      return DistCpConstants.UNKNOWN_ERROR;
-    }
-    return DistCpConstants.SUCCESS;
-}
-
-public Job execute() throws Exception {
-    Job job = createAndSubmitJob();
-
-    if (inputOptions.shouldBlock()) {
-      waitForJobCompletion(job);
-    }
-    return job;
-}
-</code></pre><p>excute()方法是执行任务，调用createAndSubmitJob()，该方法创建并提交任务到hadoop集群运行。</p>
-<pre><code>/**
- * 创建并提交MR任务
- * @return 已提交的MR任务实例
- */
-public Job createAndSubmitJob() throws Exception {
-    assert inputOptions != null;
-    assert getConf() != null;
-    Job job = null;
-    try {
-      synchronized(this) {
-        //Don&apos;t cleanup while we are setting up.
-        metaFolder = createMetaFolderPath();
-        jobFS = metaFolder.getFileSystem(getConf());
-        job = createJob();
-      }
-      if (inputOptions.shouldUseDiff()) {
-        if (!DistCpSync.sync(inputOptions, getConf())) {
-          inputOptions.disableUsingDiff();
-        }
-      }
-      createInputFileListing(job);
-
-      job.submit();
-      submitted = true;
-    } finally {
-      if (!submitted) {
-        cleanup();
-      }
-    }
-
-    String jobID = job.getJobID().toString();
-    job.getConfiguration().set(DistCpConstants.CONF_LABEL_DISTCP_JOB_ID, jobID);
-    LOG.info(&quot;DistCp job-id: &quot; + jobID);
-
-    return job;
-}
-</code></pre><p>分析源码中的几个关键字：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">DistCp</span><span class="params">(Configuration configuration, DistCpOptions inputOptions)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	Configuration config = <span class="keyword">new</span> Configuration(configuration);</span><br><span class="line">	config.addResource(DISTCP_DEFAULT_XML);</span><br><span class="line">	setConf(config);</span><br><span class="line">	<span class="keyword">this</span>.inputOptions = inputOptions;</span><br><span class="line">	<span class="keyword">this</span>.metaFolder   = createMetaFolderPath();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>run()是一个调度方法，调起execute()，校验输入、处理异常等，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调度方法，省掉了部分catch</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">run</span><span class="params">(String[] argv)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (argv.length &lt; <span class="number">1</span>) &#123;</span><br><span class="line">	  OptionsParser.usage();</span><br><span class="line">	  <span class="keyword">return</span> DistCpConstants.INVALID_ARGUMENT;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">	  inputOptions = (OptionsParser.parse(argv));</span><br><span class="line">	  setTargetPathExists();</span><br><span class="line">	  LOG.info(<span class="string">"Input Options: "</span> + inputOptions);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">	  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">	  execute(); <span class="comment">// 调用执行</span></span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">	  LOG.error(<span class="string">"Exception encountered "</span>, e);</span><br><span class="line">	  <span class="keyword">return</span> DistCpConstants.UNKNOWN_ERROR;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> DistCpConstants.SUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Job <span class="title">execute</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	Job job = createAndSubmitJob();</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> (inputOptions.shouldBlock()) &#123;</span><br><span class="line">	  waitForJobCompletion(job);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> job;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>excute()方法是执行任务，调用createAndSubmitJob()，该方法创建并提交任务到hadoop集群运行。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建并提交MR任务</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 已提交的MR任务实例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Job <span class="title">createAndSubmitJob</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">assert</span> inputOptions != <span class="keyword">null</span>;</span><br><span class="line">    <span class="function"><span class="keyword">assert</span> <span class="title">getConf</span><span class="params">()</span> !</span>= <span class="keyword">null</span>;</span><br><span class="line">    Job job = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="comment">//Don't cleanup while we are setting up.</span></span><br><span class="line">        metaFolder = createMetaFolderPath();</span><br><span class="line">        jobFS = metaFolder.getFileSystem(getConf());</span><br><span class="line">        job = createJob();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (inputOptions.shouldUseDiff()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!DistCpSync.sync(inputOptions, getConf())) &#123;</span><br><span class="line">          inputOptions.disableUsingDiff();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      createInputFileListing(job);</span><br><span class="line"></span><br><span class="line">      job.submit();</span><br><span class="line">      submitted = <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!submitted) &#123;</span><br><span class="line">        cleanup();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String jobID = job.getJobID().toString();</span><br><span class="line">    job.getConfiguration().set(DistCpConstants.CONF_LABEL_DISTCP_JOB_ID, jobID);</span><br><span class="line">    LOG.info(<span class="string">"DistCp job-id: "</span> + jobID);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> job;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>分析源码中的几个关键字：</p>
 <ul>
 <li><p>metaFolder: 在DistCp中定义为 <code>private Path metaFolder</code>，是一个 <code>org.apache.hadoop.fs.Path</code> 类型，顾名思义，是准备元数据的地方。</p>
 <ul>
 <li><p>createMetaFolderPath: 结合一个随机数生成一个临时目录。</p>
-<pre><code>/**
- * Create a default working folder for the job, under the
- * job staging directory
- *
- * @return Returns the working folder information
- * @throws Exception - EXception if any
- */
-private Path createMetaFolderPath() throws Exception {
-    Configuration configuration = getConf();
-    Path stagingDir = JobSubmissionFiles.getStagingDir(
-            new Cluster(configuration), configuration);
-    Path metaFolderPath = new Path(stagingDir, PREFIX + String.valueOf(rand.nextInt()));
-    if (LOG.isDebugEnabled())
-      LOG.debug(&quot;Meta folder location: &quot; + metaFolderPath);
-    configuration.set(DistCpConstants.CONF_LABEL_META_FOLDER, metaFolderPath.toString());    
-    return metaFolderPath;
-}
-</code></pre></li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Path <span class="title">createMetaFolderPath</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	Configuration configuration = getConf();</span><br><span class="line">	Path stagingDir = JobSubmissionFiles.getStagingDir(</span><br><span class="line">	        <span class="keyword">new</span> Cluster(configuration), configuration);</span><br><span class="line">	Path metaFolderPath = <span class="keyword">new</span> Path(stagingDir, PREFIX + String.valueOf(rand.nextInt()));</span><br><span class="line">	<span class="keyword">if</span> (LOG.isDebugEnabled())</span><br><span class="line">	  LOG.debug(<span class="string">"Meta folder location: "</span> + metaFolderPath);</span><br><span class="line">	configuration.set(DistCpConstants.CONF_LABEL_META_FOLDER, metaFolderPath.toString());    </span><br><span class="line">	<span class="keyword">return</span> metaFolderPath;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>createInputFileListing(Job job): 注意到在metaFolder下，通过getFileListingPath()生成fileList.seq文件，稍后会往fileList.seq中写入数据，这是一个SequenceFile文件，即Key/Value结构的序列化文件，这个文件里将存放所有需要拷贝的源目录/文件信息列表。</p>
-<pre><code>/**
- * Create input listing by invoking an appropriate copy listing
- * implementation. Also add delegation tokens for each path
- * to job&apos;s credential store
- *
- * @param job - Handle to job
- * @return Returns the path where the copy listing is created
- * @throws IOException - If any
- */
-protected Path createInputFileListing(Job job) throws IOException {
-  Path fileListingPath = getFileListingPath();
-  CopyListing copyListing = CopyListing.getCopyListing(job.getConfiguration(),
-      job.getCredentials(), inputOptions);
-  copyListing.buildListing(fileListingPath, inputOptions);
-  return fileListingPath;
-}
-
-/**
- * Get default name of the copy listing file. Use the meta folder
- * to create the copy listing file
- *
- * @return - Path where the copy listing file has to be saved
- * @throws IOException - Exception if any
- */
-protected Path getFileListingPath() throws IOException {
-  String fileListPathStr = metaFolder + &quot;/fileList.seq&quot;;
-  Path path = new Path(fileListPathStr);
-  return new Path(path.toUri().normalize().toString());
-}
-</code></pre></li>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Path <span class="title">createInputFileListing</span><span class="params">(Job job)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Path fileListingPath = getFileListingPath();</span><br><span class="line">  CopyListing copyListing = CopyListing.getCopyListing(job.getConfiguration(),</span><br><span class="line">      job.getCredentials(), inputOptions);</span><br><span class="line">  copyListing.buildListing(fileListingPath, inputOptions);</span><br><span class="line">  <span class="keyword">return</span> fileListingPath;</span><br><span class="line">&#125;</span><br><span class="line">	</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   - Get default name of the copy listing file. Use the meta folder</span></span><br><span class="line"><span class="comment">   - to create the copy listing file</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment">   - <span class="doctag">@return</span> - Path where the copy listing file has to be saved</span></span><br><span class="line"><span class="comment">   - <span class="doctag">@throws</span> IOException - Exception if any</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> Path <span class="title">getFileListingPath</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  String fileListPathStr = metaFolder + <span class="string">"/fileList.seq"</span>;</span><br><span class="line">  Path path = <span class="keyword">new</span> Path(fileListPathStr);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> Path(path.toUri().normalize().toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
 <hr>
-<h1 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h1><p><table border="0" style="display: table;border-collapse: separate;border-spacing: 2px;border-color:#ccc;"><br>  <thead></thead></table></p>
-<tr class="a"><br><br><th>Flag </th><br><br><th>Description </th><br><br><th>Notes</th><br>    </tr><br>  <br>  <tbody><br><br><tr class="b"><br><br><td><tt>-p[rbugpcaxt]</tt> </td><br><br><td>Preserve r: replication number<br> b: block size<br> u: user<br> g: group<br> p: permission<br> c: checksum-type<br> a: ACL<br> x: XAttr<br> t: timestamp </td><br><br><td>当指定 <tt>-update</tt>，更新的状态<b>不会同步</b>，除非文件大小不同（例如：重新创建文件）。 如果指定 <tt>-pa</tt>， DistCp 保留文件权限。</td><br>    </tr>
+<h1 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h1><table border="0" style="display: table;border-collapse: separate;border-spacing: 2px;border-color:#ccc;">
+
+
+<tr class="a"><br><br><td>Flag </td><br><br><td>Description </td><br><br><td>Notes</td><br>    </tr>
+
+
+<tr class="b"><br><br><td><tt>-p[rbugpcaxt]</tt> </td><br><br><td>Preserve r: replication number<br> b: block size<br> u: user<br> g: group<br> p: permission<br> c: checksum-type<br> a: ACL<br> x: XAttr<br> t: timestamp </td><br><br><td>当指定 <tt>-update</tt>，更新的状态<b>不会同步</b>，除非文件大小不同（例如：重新创建文件）。 如果指定 <tt>-pa</tt>， DistCp 保留文件权限。</td><br>    </tr>
 
 <tr class="a"><br><br><td><tt>-i</tt> </td><br><br><td>忽略失败 </td><br><br><td>相较默认情况，该选项会提供更精确的拷贝统计，并且保存拷贝失败的日志，方便调试。在没有文成任务中所有分块的尝试之前，一个map的失败不会导致整个任务失败。</td><br>    </tr>
 
@@ -857,8 +565,8 @@ protected Path getFileListingPath() throws IOException {
 
 <td><tt>-copybuffersize &lt;copybuffersize&gt;</tt> </td>
 
-<p><td>Size of the copy buffer to use. By default, <tt>&lt;copybuffersize&gt;</tt> is set to 8192B </td><br>    </p></tr><br>  </tbody><p></p>
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+<p><td>Size of the copy buffer to use. By default, <tt>&lt;copybuffersize&gt;</tt> is set to 8192B </td><br>    </p></tr><p></p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2></table>
           
         
       
@@ -1830,172 +1538,6 @@ output {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/cryptic_interceptor/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Yampery">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="天尽头，回眸望红尘">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/05/cryptic_interceptor/" itemprop="url">使用拦截器进行数据加解密</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-05T14:47:07+08:00">
-                2019-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>本文并非详细探讨AES加解密内容，而是在Spring+Mybatis的项目基础上，以sql拦截器的形式，实现了对数据存取加解密的方案。文章项目示例采用springboot框架，对需要加解密的字段添加注解，sql执行过程中，拦截器进行拦截。可通过配置加解密开关决定是否对字段进行加解密。加密方式AES。</p>
-</blockquote>
-<p>文章并未列出所有源码，依赖包等详细配置，在源码中有具体的sql脚本等文件，<a href="https://github.com/Yampery/cryptic-data" target="_blank" rel="noopener">点击访问项目源码。</a></p>
-<ul>
-<li>源码框架<blockquote>
-<p>java8   springboot   mybatis   gradle</p>
-</blockquote>
-</li>
-</ul>
-<hr>
-<h2 id="加解密工具"><a href="#加解密工具" class="headerlink" title="加解密工具"></a>加解密工具</h2><blockquote>
-<p>方法generateAESKey()生成128位秘钥，以16进制字符串保存，从配置文件读取，以单例模式初始化加解密工具，保证项目运行过程中对象不会被重新创建，避免多次初始化Cipher。加解密方法详见代码如下。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription ADESUtils</span><br><span class="line"> * &lt;p&gt;字段加解密，使用MySql AES算法&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2018/4/4 13:10</span><br><span class="line"> */</span><br><span class="line">@Component</span><br><span class="line">public class ADESUtils &#123;</span><br><span class="line">    private static final String ENCRYPT_TYPE = &quot;AES&quot;;</span><br><span class="line">    private static final String ENCODING = &quot;UTF-8&quot;;</span><br><span class="line"></span><br><span class="line">    // 密盐</span><br><span class="line">    private static String aesSalt;</span><br><span class="line">    private static ADESUtils adesUtils;</span><br><span class="line">    private static Cipher encryptCipher;    // 加密cipher</span><br><span class="line">    private static Cipher decryptChipher;   // 解密chipher</span><br><span class="line"></span><br><span class="line">    // 加解密开关，从配置获取</span><br><span class="line">    private static String CRYPTIC_SWITCH;</span><br><span class="line">    /**</span><br><span class="line">     * 从配置中获取秘钥</span><br><span class="line">     * :默认值填写自己生成的秘钥</span><br><span class="line">     * @param key</span><br><span class="line">     */</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.salt:0&#125;&quot;)</span><br><span class="line">    public void setAESSalt(String key)&#123;</span><br><span class="line">        ADESUtils.aesSalt = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取开关</span><br><span class="line">     * 默认为不加密</span><br><span class="line">     * @param val</span><br><span class="line">     */</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.switch:0&#125;&quot;)</span><br><span class="line">    public void setCrypticSwitch(String val) &#123;</span><br><span class="line">        ADESUtils.CRYPTIC_SWITCH = val;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * encryptCipher、decryptChipher初始化</span><br><span class="line">     */</span><br><span class="line">    public static void init()&#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            encryptCipher = Cipher.getInstance(ENCRYPT_TYPE);</span><br><span class="line">            decryptChipher = Cipher.getInstance(ENCRYPT_TYPE);</span><br><span class="line">            encryptCipher.init(Cipher.ENCRYPT_MODE, generateMySQLAESKey(aesSalt));</span><br><span class="line">            decryptChipher.init(Cipher.DECRYPT_MODE, generateMySQLAESKey(aesSalt));</span><br><span class="line">        &#125; catch (InvalidKeyException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125; catch (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125; catch (NoSuchPaddingException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private ADESUtils() &#123;  &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取单例</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static ADESUtils getInstance()&#123;</span><br><span class="line">        if(adesUtils == null)&#123;</span><br><span class="line">            // 当需要创建的时候在加锁</span><br><span class="line">            synchronized(ADESUtils.class) &#123;</span><br><span class="line">                if (adesUtils == null) &#123;</span><br><span class="line">                    adesUtils = new ADESUtils();</span><br><span class="line">                    init();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return adesUtils;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对明文加密</span><br><span class="line">     * @param pString</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public String encrypt(String pString) &#123;</span><br><span class="line"></span><br><span class="line">        if (StringUtils.isBlank(pString) || StringUtils.equals(&quot;0&quot;, CRYPTIC_SWITCH))</span><br><span class="line">            return StringUtils.trimToEmpty(pString);</span><br><span class="line">        try&#123;</span><br><span class="line">            return new String(Hex.encodeHex(encryptCipher.doFinal(pString.getBytes(ENCODING)))).toUpperCase();</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return pString;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对密文解密</span><br><span class="line">     * @param eString</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public String decrypt(String eString) &#123;</span><br><span class="line">        if (StringUtils.isBlank(eString) || StringUtils.equals(&quot;0&quot;, CRYPTIC_SWITCH))</span><br><span class="line">            return StringUtils.trimToEmpty(eString);</span><br><span class="line">        try &#123;</span><br><span class="line">            return new String(decryptChipher.doFinal(Hex.decodeHex(eString.toCharArray())));</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return eString;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * 产生mysql-aes_encrypt</span><br><span class="line">     * @param key 加密的密盐</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static SecretKeySpec generateMySQLAESKey(final String key) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            final byte[] finalKey = new byte[16];</span><br><span class="line">            int i = 0;</span><br><span class="line">            for(byte b : Hex.decodeHex(key.toCharArray()))</span><br><span class="line">                finalKey[i++ % 16] ^= b;</span><br><span class="line">            return new SecretKeySpec(finalKey, &quot;AES&quot;);</span><br><span class="line">        &#125; catch(Exception e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 生成秘钥(128位)</span><br><span class="line">     * @return</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    public static String generateAESKey() throws Exception&#123;</span><br><span class="line">        //实例化</span><br><span class="line">        KeyGenerator kgen = KeyGenerator.getInstance(&quot;AES&quot;);</span><br><span class="line">        //设置密钥长度</span><br><span class="line">        kgen.init(128);</span><br><span class="line">        //生成密钥</span><br><span class="line">        SecretKey skey = kgen.generateKey();</span><br><span class="line">        // 转为16进制字串</span><br><span class="line">        String key = new String(Hex.encodeHex(skey.getEncoded()));</span><br><span class="line">        //返回密钥的16进制字串</span><br><span class="line">        return key.toUpperCase();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="加解密字段注解"><a href="#加解密字段注解" class="headerlink" title="加解密字段注解"></a>加解密字段注解</h2><blockquote>
-<p>注解标识字段是否需要加密或者解密，用于通过反射获取需要进行加解密的字段，防止需求变动，将加密和解密注解分开。</p>
-</blockquote>
-<h3 id="加密注解"><a href="#加密注解" class="headerlink" title="加密注解"></a>加密注解</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription EncryptField</span><br><span class="line"> * &lt;p&gt;字段加密注解&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:01</span><br><span class="line"> */</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface EncryptField &#123;</span><br><span class="line">    String value() default &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="解密注解"><a href="#解密注解" class="headerlink" title="解密注解"></a>解密注解</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription DecryptField</span><br><span class="line"> * &lt;p&gt;字段解密注解&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:05</span><br><span class="line"> */</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface DecryptField &#123;</span><br><span class="line">    String value() default &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="封装加解密工具"><a href="#封装加解密工具" class="headerlink" title="封装加解密工具"></a>封装加解密工具</h2><blockquote>
-<p>为了在项目中方便使用，将上节中的加解密工具进行封装，封装后的工具可以作用于对象，通过反射获取注解，而对原对象进行改变。另外，项目中也实现了对象的自加解密CrypticPojo，原理是CrypticPojo实现clone方法，并在内部实现加解密方法，需要进行字段加解密的业务对象只需要继承CrypticPojo，每次返回调用一次克隆并加密方法即可，具体见源码。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription CryptPojoUtils</span><br><span class="line"> * &lt;p&gt;对象加解密工具</span><br><span class="line"> * 其子类可以通过调用&lt;tt&gt;encrypt(T t)&lt;/tt&gt;方法实现自加密，返回参数类型；</span><br><span class="line"> * 调用&lt;tt&gt;decrypt(T t)&lt;/tt&gt;实现自解密，返回参数类型；</span><br><span class="line"> * &lt;tt&gt;encrypt&lt;/tt&gt;对注解&#123;@link EncryptField&#125;字段有效；</span><br><span class="line"> * &lt;tt&gt;decrypt&lt;/tt&gt;对注解&#123;@link DecryptField&#125;字段有效。&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:36</span><br><span class="line"> */</span><br><span class="line">public class CryptPojoUtils &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对对象t加密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T encrypt(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(EncryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String) field.get(t);</span><br><span class="line">                        if (StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().encrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                        field.setAccessible(false);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对象解密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T decrypt(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().decrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对含注解字段解密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void decryptField(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().decrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        // return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对含注解字段加密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void encryptField(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(EncryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().encrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 隐藏号码中间4位</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void hidePhone(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            // 暂时与解密注解共用一个注解，该注解隐藏手机号中间四位</span><br><span class="line">                            field.set(t, StringUtils.overlay(fieldValue, &quot;****&quot;, 3, 7));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><blockquote>
-<p>使用sql拦截器处理加解密基本是对项目影响比较小的。该拦截器通过拦截sql，对写入数据和查询结果进行重写，然后再放行从而更改对象。<br>关于sql语句参数，文章中并没有在拦截器处理，而是使用一个LinkedMap封装了查询参数，在封装的过程中会对字段进行加密。<br>关于springboot中和spring中拦截器使用的区别下文将会介绍。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription DBInterceptor</span><br><span class="line"> * &lt;p&gt;实现Mybatis拦截器，用于拦截修改，插入和返回需要加密或者解密的对象&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2018/4/4 14:17</span><br><span class="line"> */</span><br><span class="line">@Intercepts(&#123;</span><br><span class="line">        @Signature(type=Executor.class,method=&quot;update&quot;,args=&#123;MappedStatement.class,Object.class&#125;),</span><br><span class="line">        @Signature(type=Executor.class,method=&quot;query&quot;,args=&#123;MappedStatement.class,Object.class,RowBounds.class,ResultHandler.class&#125;)</span><br><span class="line">&#125;)</span><br><span class="line">@Component</span><br><span class="line">public class DBInterceptor implements Interceptor &#123;</span><br><span class="line">    private final Logger logger = LoggerFactory.getLogger(DBInterceptor.class);</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.switch&#125;&quot;) private String CRYPTIC_SWITCH;</span><br><span class="line">    @Override</span><br><span class="line">    public Object intercept(Invocation invocation) throws Throwable &#123;</span><br><span class="line">        MappedStatement statement = (MappedStatement) invocation.getArgs()[0];</span><br><span class="line">        String methodName = invocation.getMethod().getName();</span><br><span class="line">        Object parameter = invocation.getArgs()[1];</span><br><span class="line">        BoundSql sql = statement.getBoundSql(parameter);</span><br><span class="line">        logger.info(&quot;sql is: &#123;&#125;&quot;, sql.getSql());</span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * @TODO 处理查询</span><br><span class="line">         */</span><br><span class="line">        if (StringUtils.equalsIgnoreCase(&quot;query&quot;, methodName)) &#123;</span><br><span class="line">            /**</span><br><span class="line">             * 在这里可以处理查询参数，如传递的参数为明文，要按照密文查询</span><br><span class="line">             * 本文选择使用同一参数封装处理方案&#123;@link git.yampery.cryptic.common.QueryParams&#125;</span><br><span class="line">             */</span><br><span class="line">        &#125;</span><br><span class="line">        /**</span><br><span class="line">         * 拦截批量插入操作不仅繁琐，而且为了通用逐一通过反射加密不妥</span><br><span class="line">         * 如果有批量操作，最好在传递参数之前，向list中添加之前就加密</span><br><span class="line">         */</span><br><span class="line">        if (!&quot;0&quot;.equals(CRYPTIC_SWITCH)) &#123;</span><br><span class="line">            if (StringUtils.equalsIgnoreCase(&quot;update&quot;, methodName)</span><br><span class="line">                    || StringUtils.equalsIgnoreCase(&quot;insert&quot;, methodName)) &#123;</span><br><span class="line">                CryptPojoUtils.encryptField(parameter);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Object returnValue = invocation.proceed();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            if (!&quot;0&quot;.equals(CRYPTIC_SWITCH)) &#123;</span><br><span class="line">                if (returnValue instanceof ArrayList&lt;?&gt;) &#123;</span><br><span class="line">                    List&lt;?&gt; list = (ArrayList&lt;?&gt;) returnValue;</span><br><span class="line">                    if (null == list || 1 &gt; list.size())</span><br><span class="line">                        return returnValue;</span><br><span class="line">                    Object obj = list.get(0);</span><br><span class="line">                    if (null == obj)  // 这里虽然list不是空，但是返回字符串等有可能为空</span><br><span class="line">                        return returnValue;</span><br><span class="line">                    // 判断第一个对象是否有DecryptField注解</span><br><span class="line">                    Field[] fields = obj.getClass().getDeclaredFields();</span><br><span class="line">                    int len;</span><br><span class="line">                    if (null != fields &amp;&amp; 0 &lt; (len = fields.length)) &#123;</span><br><span class="line">                        // 标记是否有解密注解</span><br><span class="line">                        boolean isD = false;</span><br><span class="line">                        for (int i = 0; i &lt; len; i++) &#123;</span><br><span class="line">                            /**</span><br><span class="line">                             * 由于返回的是同一种类型列表，因此这里判断出来之后可以保存field的名称</span><br><span class="line">                             * 之后处理所有对象直接按照field名称查找Field从而改之即可</span><br><span class="line">                             * 有可能该类存在多个注解字段，所以需要保存到数组（项目中目前最多是2个）</span><br><span class="line">                             * @TODO 保存带DecryptField注解的字段名称到数组，按照名称获取字段并解密</span><br><span class="line">                             * */</span><br><span class="line">                            if (fields[i].isAnnotationPresent(DecryptField.class)) &#123;</span><br><span class="line">                                isD = true;</span><br><span class="line">                                break;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; /// for end ~</span><br><span class="line">                        if (isD)  // 将含有DecryptField注解的字段解密</span><br><span class="line">                            list.forEach(l -&gt; CryptPojoUtils.decryptField(l));</span><br><span class="line">                    &#125; /// if end ~</span><br><span class="line">                &#125; /// if end ~</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            // 打印异常，由于拦截器本身抛出异常，比如拦截到很奇葩的返回，应算正常</span><br><span class="line">            // 直接返回原结果即可</span><br><span class="line">            logger.info(&quot;抛出异常，正常返回==&gt; &quot; + e.getMessage());</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return returnValue;</span><br><span class="line">        &#125;</span><br><span class="line">        return returnValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object plugin(Object target) &#123;</span><br><span class="line">        return Plugin.wrap(target, this);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setProperties(Properties properties) &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="不同框架配置说明"><a href="#不同框架配置说明" class="headerlink" title="不同框架配置说明"></a>不同框架配置说明</h2><h3 id="springboot下的配置"><a href="#springboot下的配置" class="headerlink" title="springboot下的配置"></a>springboot下的配置</h3><ul>
-<li>启动主类需要添加mapper扫描注解</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@MapperScan(&quot;git.yampery.cryptic.dao&quot;)</span><br><span class="line">public class Application &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>配置文件application.properties需要添加映射</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># Mybatis</span><br><span class="line">mybatis.config-location             =classpath:mybatis/mybatis-config.xml</span><br><span class="line">mybatis.mapper-locations            =classpath:mybatis/mapper/*.xml</span><br><span class="line">mybatis.type-aliases-package        =git.yampery.cryptic.pojo</span><br><span class="line"></span><br><span class="line"># 开启debug模式可以在控制台查看springboot加载流程</span><br><span class="line"># debug                               =true</span><br><span class="line"></span><br><span class="line"># 密盐（使用工具ADESUtils生成）</span><br><span class="line">sys.aes.salt                        =4BB90812C2B9B0882A6FA7C203E4717F</span><br><span class="line"># 加解密开关（1：开启加解密；0：关闭加解密）</span><br><span class="line">sys.aes.switch                      =1</span><br></pre></td></tr></table></figure>
-<ul>
-<li>拦截器会自动扫描，注意@Component注解</li>
-</ul>
-<h3 id="spring的xml配置"><a href="#spring的xml配置" class="headerlink" title="spring的xml配置"></a>spring的xml配置</h3><ul>
-<li>mybatis当然和传统配置一致，在spring上下文配置中添加</li>
-<li>拦截器配置，在spring上下文配置文件sqlsessionfactory中</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;configLocation&quot; value=&quot;classpath:mybatis.xml&quot; /&gt;</span><br><span class="line">	&lt;!-- 自动扫描mapping.xml文件 --&gt;</span><br><span class="line">	&lt;property name=&quot;mapperLocations&quot;&gt;</span><br><span class="line">		&lt;array&gt;</span><br><span class="line">			&lt;value&gt;classpath:mybatis/mapper/*.xml&lt;/value&gt;</span><br><span class="line">		&lt;/array&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	&lt;property name=&quot;plugins&quot;&gt;</span><br><span class="line">		&lt;array&gt;</span><br><span class="line">			&lt;bean class=&quot;git.yampery.cryptic.interceptor.DBInterceptor&quot;&gt;</span><br><span class="line">				&lt;property name=&quot;properties&quot; value=&quot;property-value&quot;/&gt;</span><br><span class="line">			&lt;/bean&gt;</span><br><span class="line">		&lt;/array&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;basePackage&quot; value=&quot;git.yampery.cryptic.dao&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;sqlSessionFactory&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p><strong>注意：文章中的代码只是部分，源码包含完整的测试和说明，<a href="https://github.com/Yampery/cryptic-data" target="_blank" rel="noopener">点击访问项目源码。</a></strong></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/ambari/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2314,6 +1856,172 @@ hadoop jar /usr/hdp/2.6.4.0-91/hadoop-mapreduce/hadoop-mapreduce-examples-2.7.3.
 <p>  <a href="http://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html#Source_Code" title="官方示例源码" target="_blank" rel="noopener">http://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html#Source_Code</a></p>
 </li>
 </ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/05/cryptic_interceptor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Yampery">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="天尽头，回眸望红尘">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/05/cryptic_interceptor/" itemprop="url">使用拦截器进行数据加解密</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-05T14:47:07+08:00">
+                2019-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>本文并非详细探讨AES加解密内容，而是在Spring+Mybatis的项目基础上，以sql拦截器的形式，实现了对数据存取加解密的方案。文章项目示例采用springboot框架，对需要加解密的字段添加注解，sql执行过程中，拦截器进行拦截。可通过配置加解密开关决定是否对字段进行加解密。加密方式AES。</p>
+</blockquote>
+<p>文章并未列出所有源码，依赖包等详细配置，在源码中有具体的sql脚本等文件，<a href="https://github.com/Yampery/cryptic-data" target="_blank" rel="noopener">点击访问项目源码。</a></p>
+<ul>
+<li>源码框架<blockquote>
+<p>java8   springboot   mybatis   gradle</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h2 id="加解密工具"><a href="#加解密工具" class="headerlink" title="加解密工具"></a>加解密工具</h2><blockquote>
+<p>方法generateAESKey()生成128位秘钥，以16进制字符串保存，从配置文件读取，以单例模式初始化加解密工具，保证项目运行过程中对象不会被重新创建，避免多次初始化Cipher。加解密方法详见代码如下。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription ADESUtils</span><br><span class="line"> * &lt;p&gt;字段加解密，使用MySql AES算法&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2018/4/4 13:10</span><br><span class="line"> */</span><br><span class="line">@Component</span><br><span class="line">public class ADESUtils &#123;</span><br><span class="line">    private static final String ENCRYPT_TYPE = &quot;AES&quot;;</span><br><span class="line">    private static final String ENCODING = &quot;UTF-8&quot;;</span><br><span class="line"></span><br><span class="line">    // 密盐</span><br><span class="line">    private static String aesSalt;</span><br><span class="line">    private static ADESUtils adesUtils;</span><br><span class="line">    private static Cipher encryptCipher;    // 加密cipher</span><br><span class="line">    private static Cipher decryptChipher;   // 解密chipher</span><br><span class="line"></span><br><span class="line">    // 加解密开关，从配置获取</span><br><span class="line">    private static String CRYPTIC_SWITCH;</span><br><span class="line">    /**</span><br><span class="line">     * 从配置中获取秘钥</span><br><span class="line">     * :默认值填写自己生成的秘钥</span><br><span class="line">     * @param key</span><br><span class="line">     */</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.salt:0&#125;&quot;)</span><br><span class="line">    public void setAESSalt(String key)&#123;</span><br><span class="line">        ADESUtils.aesSalt = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取开关</span><br><span class="line">     * 默认为不加密</span><br><span class="line">     * @param val</span><br><span class="line">     */</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.switch:0&#125;&quot;)</span><br><span class="line">    public void setCrypticSwitch(String val) &#123;</span><br><span class="line">        ADESUtils.CRYPTIC_SWITCH = val;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * encryptCipher、decryptChipher初始化</span><br><span class="line">     */</span><br><span class="line">    public static void init()&#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            encryptCipher = Cipher.getInstance(ENCRYPT_TYPE);</span><br><span class="line">            decryptChipher = Cipher.getInstance(ENCRYPT_TYPE);</span><br><span class="line">            encryptCipher.init(Cipher.ENCRYPT_MODE, generateMySQLAESKey(aesSalt));</span><br><span class="line">            decryptChipher.init(Cipher.DECRYPT_MODE, generateMySQLAESKey(aesSalt));</span><br><span class="line">        &#125; catch (InvalidKeyException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125; catch (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125; catch (NoSuchPaddingException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private ADESUtils() &#123;  &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取单例</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static ADESUtils getInstance()&#123;</span><br><span class="line">        if(adesUtils == null)&#123;</span><br><span class="line">            // 当需要创建的时候在加锁</span><br><span class="line">            synchronized(ADESUtils.class) &#123;</span><br><span class="line">                if (adesUtils == null) &#123;</span><br><span class="line">                    adesUtils = new ADESUtils();</span><br><span class="line">                    init();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return adesUtils;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对明文加密</span><br><span class="line">     * @param pString</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public String encrypt(String pString) &#123;</span><br><span class="line"></span><br><span class="line">        if (StringUtils.isBlank(pString) || StringUtils.equals(&quot;0&quot;, CRYPTIC_SWITCH))</span><br><span class="line">            return StringUtils.trimToEmpty(pString);</span><br><span class="line">        try&#123;</span><br><span class="line">            return new String(Hex.encodeHex(encryptCipher.doFinal(pString.getBytes(ENCODING)))).toUpperCase();</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return pString;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对密文解密</span><br><span class="line">     * @param eString</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public String decrypt(String eString) &#123;</span><br><span class="line">        if (StringUtils.isBlank(eString) || StringUtils.equals(&quot;0&quot;, CRYPTIC_SWITCH))</span><br><span class="line">            return StringUtils.trimToEmpty(eString);</span><br><span class="line">        try &#123;</span><br><span class="line">            return new String(decryptChipher.doFinal(Hex.decodeHex(eString.toCharArray())));</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return eString;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * 产生mysql-aes_encrypt</span><br><span class="line">     * @param key 加密的密盐</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static SecretKeySpec generateMySQLAESKey(final String key) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            final byte[] finalKey = new byte[16];</span><br><span class="line">            int i = 0;</span><br><span class="line">            for(byte b : Hex.decodeHex(key.toCharArray()))</span><br><span class="line">                finalKey[i++ % 16] ^= b;</span><br><span class="line">            return new SecretKeySpec(finalKey, &quot;AES&quot;);</span><br><span class="line">        &#125; catch(Exception e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 生成秘钥(128位)</span><br><span class="line">     * @return</span><br><span class="line">     * @throws Exception</span><br><span class="line">     */</span><br><span class="line">    public static String generateAESKey() throws Exception&#123;</span><br><span class="line">        //实例化</span><br><span class="line">        KeyGenerator kgen = KeyGenerator.getInstance(&quot;AES&quot;);</span><br><span class="line">        //设置密钥长度</span><br><span class="line">        kgen.init(128);</span><br><span class="line">        //生成密钥</span><br><span class="line">        SecretKey skey = kgen.generateKey();</span><br><span class="line">        // 转为16进制字串</span><br><span class="line">        String key = new String(Hex.encodeHex(skey.getEncoded()));</span><br><span class="line">        //返回密钥的16进制字串</span><br><span class="line">        return key.toUpperCase();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="加解密字段注解"><a href="#加解密字段注解" class="headerlink" title="加解密字段注解"></a>加解密字段注解</h2><blockquote>
+<p>注解标识字段是否需要加密或者解密，用于通过反射获取需要进行加解密的字段，防止需求变动，将加密和解密注解分开。</p>
+</blockquote>
+<h3 id="加密注解"><a href="#加密注解" class="headerlink" title="加密注解"></a>加密注解</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription EncryptField</span><br><span class="line"> * &lt;p&gt;字段加密注解&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:01</span><br><span class="line"> */</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface EncryptField &#123;</span><br><span class="line">    String value() default &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="解密注解"><a href="#解密注解" class="headerlink" title="解密注解"></a>解密注解</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription DecryptField</span><br><span class="line"> * &lt;p&gt;字段解密注解&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:05</span><br><span class="line"> */</span><br><span class="line">@Target(ElementType.FIELD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface DecryptField &#123;</span><br><span class="line">    String value() default &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="封装加解密工具"><a href="#封装加解密工具" class="headerlink" title="封装加解密工具"></a>封装加解密工具</h2><blockquote>
+<p>为了在项目中方便使用，将上节中的加解密工具进行封装，封装后的工具可以作用于对象，通过反射获取注解，而对原对象进行改变。另外，项目中也实现了对象的自加解密CrypticPojo，原理是CrypticPojo实现clone方法，并在内部实现加解密方法，需要进行字段加解密的业务对象只需要继承CrypticPojo，每次返回调用一次克隆并加密方法即可，具体见源码。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription CryptPojoUtils</span><br><span class="line"> * &lt;p&gt;对象加解密工具</span><br><span class="line"> * 其子类可以通过调用&lt;tt&gt;encrypt(T t)&lt;/tt&gt;方法实现自加密，返回参数类型；</span><br><span class="line"> * 调用&lt;tt&gt;decrypt(T t)&lt;/tt&gt;实现自解密，返回参数类型；</span><br><span class="line"> * &lt;tt&gt;encrypt&lt;/tt&gt;对注解&#123;@link EncryptField&#125;字段有效；</span><br><span class="line"> * &lt;tt&gt;decrypt&lt;/tt&gt;对注解&#123;@link DecryptField&#125;字段有效。&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2017/10/24 13:36</span><br><span class="line"> */</span><br><span class="line">public class CryptPojoUtils &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对对象t加密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T encrypt(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(EncryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String) field.get(t);</span><br><span class="line">                        if (StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().encrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                        field.setAccessible(false);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对象解密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; T decrypt(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().decrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对含注解字段解密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void decryptField(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().decrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">        // return t;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 对含注解字段加密</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void encryptField(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(EncryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            field.set(t, ADESUtils.getInstance().encrypt(fieldValue));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 隐藏号码中间4位</span><br><span class="line">     * @param t</span><br><span class="line">     * @param &lt;T&gt;</span><br><span class="line">     */</span><br><span class="line">    public static &lt;T&gt; void hidePhone(T t) &#123;</span><br><span class="line">        Field[] declaredFields = t.getClass().getDeclaredFields();</span><br><span class="line">        try &#123;</span><br><span class="line">            if (declaredFields != null &amp;&amp; declaredFields.length &gt; 0) &#123;</span><br><span class="line">                for (Field field : declaredFields) &#123;</span><br><span class="line">                    if (field.isAnnotationPresent(DecryptField.class) &amp;&amp; field.getType().toString().endsWith(&quot;String&quot;)) &#123;</span><br><span class="line">                        field.setAccessible(true);</span><br><span class="line">                        String fieldValue = (String)field.get(t);</span><br><span class="line">                        if(StringUtils.isNotEmpty(fieldValue)) &#123;</span><br><span class="line">                            // 暂时与解密注解共用一个注解，该注解隐藏手机号中间四位</span><br><span class="line">                            field.set(t, StringUtils.overlay(fieldValue, &quot;****&quot;, 3, 7));</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">            throw new RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><blockquote>
+<p>使用sql拦截器处理加解密基本是对项目影响比较小的。该拦截器通过拦截sql，对写入数据和查询结果进行重写，然后再放行从而更改对象。<br>关于sql语句参数，文章中并没有在拦截器处理，而是使用一个LinkedMap封装了查询参数，在封装的过程中会对字段进行加密。<br>关于springboot中和spring中拦截器使用的区别下文将会介绍。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @decription DBInterceptor</span><br><span class="line"> * &lt;p&gt;实现Mybatis拦截器，用于拦截修改，插入和返回需要加密或者解密的对象&lt;/p&gt;</span><br><span class="line"> * @author Yampery</span><br><span class="line"> * @date 2018/4/4 14:17</span><br><span class="line"> */</span><br><span class="line">@Intercepts(&#123;</span><br><span class="line">        @Signature(type=Executor.class,method=&quot;update&quot;,args=&#123;MappedStatement.class,Object.class&#125;),</span><br><span class="line">        @Signature(type=Executor.class,method=&quot;query&quot;,args=&#123;MappedStatement.class,Object.class,RowBounds.class,ResultHandler.class&#125;)</span><br><span class="line">&#125;)</span><br><span class="line">@Component</span><br><span class="line">public class DBInterceptor implements Interceptor &#123;</span><br><span class="line">    private final Logger logger = LoggerFactory.getLogger(DBInterceptor.class);</span><br><span class="line">    @Value(&quot;$&#123;sys.aes.switch&#125;&quot;) private String CRYPTIC_SWITCH;</span><br><span class="line">    @Override</span><br><span class="line">    public Object intercept(Invocation invocation) throws Throwable &#123;</span><br><span class="line">        MappedStatement statement = (MappedStatement) invocation.getArgs()[0];</span><br><span class="line">        String methodName = invocation.getMethod().getName();</span><br><span class="line">        Object parameter = invocation.getArgs()[1];</span><br><span class="line">        BoundSql sql = statement.getBoundSql(parameter);</span><br><span class="line">        logger.info(&quot;sql is: &#123;&#125;&quot;, sql.getSql());</span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * @TODO 处理查询</span><br><span class="line">         */</span><br><span class="line">        if (StringUtils.equalsIgnoreCase(&quot;query&quot;, methodName)) &#123;</span><br><span class="line">            /**</span><br><span class="line">             * 在这里可以处理查询参数，如传递的参数为明文，要按照密文查询</span><br><span class="line">             * 本文选择使用同一参数封装处理方案&#123;@link git.yampery.cryptic.common.QueryParams&#125;</span><br><span class="line">             */</span><br><span class="line">        &#125;</span><br><span class="line">        /**</span><br><span class="line">         * 拦截批量插入操作不仅繁琐，而且为了通用逐一通过反射加密不妥</span><br><span class="line">         * 如果有批量操作，最好在传递参数之前，向list中添加之前就加密</span><br><span class="line">         */</span><br><span class="line">        if (!&quot;0&quot;.equals(CRYPTIC_SWITCH)) &#123;</span><br><span class="line">            if (StringUtils.equalsIgnoreCase(&quot;update&quot;, methodName)</span><br><span class="line">                    || StringUtils.equalsIgnoreCase(&quot;insert&quot;, methodName)) &#123;</span><br><span class="line">                CryptPojoUtils.encryptField(parameter);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Object returnValue = invocation.proceed();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            if (!&quot;0&quot;.equals(CRYPTIC_SWITCH)) &#123;</span><br><span class="line">                if (returnValue instanceof ArrayList&lt;?&gt;) &#123;</span><br><span class="line">                    List&lt;?&gt; list = (ArrayList&lt;?&gt;) returnValue;</span><br><span class="line">                    if (null == list || 1 &gt; list.size())</span><br><span class="line">                        return returnValue;</span><br><span class="line">                    Object obj = list.get(0);</span><br><span class="line">                    if (null == obj)  // 这里虽然list不是空，但是返回字符串等有可能为空</span><br><span class="line">                        return returnValue;</span><br><span class="line">                    // 判断第一个对象是否有DecryptField注解</span><br><span class="line">                    Field[] fields = obj.getClass().getDeclaredFields();</span><br><span class="line">                    int len;</span><br><span class="line">                    if (null != fields &amp;&amp; 0 &lt; (len = fields.length)) &#123;</span><br><span class="line">                        // 标记是否有解密注解</span><br><span class="line">                        boolean isD = false;</span><br><span class="line">                        for (int i = 0; i &lt; len; i++) &#123;</span><br><span class="line">                            /**</span><br><span class="line">                             * 由于返回的是同一种类型列表，因此这里判断出来之后可以保存field的名称</span><br><span class="line">                             * 之后处理所有对象直接按照field名称查找Field从而改之即可</span><br><span class="line">                             * 有可能该类存在多个注解字段，所以需要保存到数组（项目中目前最多是2个）</span><br><span class="line">                             * @TODO 保存带DecryptField注解的字段名称到数组，按照名称获取字段并解密</span><br><span class="line">                             * */</span><br><span class="line">                            if (fields[i].isAnnotationPresent(DecryptField.class)) &#123;</span><br><span class="line">                                isD = true;</span><br><span class="line">                                break;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; /// for end ~</span><br><span class="line">                        if (isD)  // 将含有DecryptField注解的字段解密</span><br><span class="line">                            list.forEach(l -&gt; CryptPojoUtils.decryptField(l));</span><br><span class="line">                    &#125; /// if end ~</span><br><span class="line">                &#125; /// if end ~</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            // 打印异常，由于拦截器本身抛出异常，比如拦截到很奇葩的返回，应算正常</span><br><span class="line">            // 直接返回原结果即可</span><br><span class="line">            logger.info(&quot;抛出异常，正常返回==&gt; &quot; + e.getMessage());</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            return returnValue;</span><br><span class="line">        &#125;</span><br><span class="line">        return returnValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object plugin(Object target) &#123;</span><br><span class="line">        return Plugin.wrap(target, this);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setProperties(Properties properties) &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="不同框架配置说明"><a href="#不同框架配置说明" class="headerlink" title="不同框架配置说明"></a>不同框架配置说明</h2><h3 id="springboot下的配置"><a href="#springboot下的配置" class="headerlink" title="springboot下的配置"></a>springboot下的配置</h3><ul>
+<li>启动主类需要添加mapper扫描注解</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@MapperScan(&quot;git.yampery.cryptic.dao&quot;)</span><br><span class="line">public class Application &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置文件application.properties需要添加映射</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># Mybatis</span><br><span class="line">mybatis.config-location             =classpath:mybatis/mybatis-config.xml</span><br><span class="line">mybatis.mapper-locations            =classpath:mybatis/mapper/*.xml</span><br><span class="line">mybatis.type-aliases-package        =git.yampery.cryptic.pojo</span><br><span class="line"></span><br><span class="line"># 开启debug模式可以在控制台查看springboot加载流程</span><br><span class="line"># debug                               =true</span><br><span class="line"></span><br><span class="line"># 密盐（使用工具ADESUtils生成）</span><br><span class="line">sys.aes.salt                        =4BB90812C2B9B0882A6FA7C203E4717F</span><br><span class="line"># 加解密开关（1：开启加解密；0：关闭加解密）</span><br><span class="line">sys.aes.switch                      =1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>拦截器会自动扫描，注意@Component注解</li>
+</ul>
+<h3 id="spring的xml配置"><a href="#spring的xml配置" class="headerlink" title="spring的xml配置"></a>spring的xml配置</h3><ul>
+<li>mybatis当然和传统配置一致，在spring上下文配置中添加</li>
+<li>拦截器配置，在spring上下文配置文件sqlsessionfactory中</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;configLocation&quot; value=&quot;classpath:mybatis.xml&quot; /&gt;</span><br><span class="line">	&lt;!-- 自动扫描mapping.xml文件 --&gt;</span><br><span class="line">	&lt;property name=&quot;mapperLocations&quot;&gt;</span><br><span class="line">		&lt;array&gt;</span><br><span class="line">			&lt;value&gt;classpath:mybatis/mapper/*.xml&lt;/value&gt;</span><br><span class="line">		&lt;/array&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	&lt;property name=&quot;plugins&quot;&gt;</span><br><span class="line">		&lt;array&gt;</span><br><span class="line">			&lt;bean class=&quot;git.yampery.cryptic.interceptor.DBInterceptor&quot;&gt;</span><br><span class="line">				&lt;property name=&quot;properties&quot; value=&quot;property-value&quot;/&gt;</span><br><span class="line">			&lt;/bean&gt;</span><br><span class="line">		&lt;/array&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;basePackage&quot; value=&quot;git.yampery.cryptic.dao&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;sqlSessionFactory&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p><strong>注意：文章中的代码只是部分，源码包含完整的测试和说明，<a href="https://github.com/Yampery/cryptic-data" target="_blank" rel="noopener">点击访问项目源码。</a></strong></p>
 
           
         
