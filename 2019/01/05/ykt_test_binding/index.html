@@ -458,10 +458,12 @@ DirectMap2M:      897024 kB
 2. 测试数据：csv 100w；
 3. 线程组：500并发，60秒增长时间，600秒持续时间。
 </code></pre><h2 id="测试结果一"><a href="#测试结果一" class="headerlink" title="测试结果一"></a>测试结果一</h2><pre><code>未开启TIME_WAIT重用，FIN_WAIT_2状态时间为60
-</code></pre><h3 id="聚合分析"><a href="#聚合分析" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/dS29AV5.png" alt=""><br><img src="https://i.imgur.com/eJTZ9u2.png" alt=""></p>
+</code></pre><h3 id="聚合分析"><a href="#聚合分析" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/dS29AV5.png" alt="">
+<img src="https://i.imgur.com/eJTZ9u2.png" alt=""></p>
 <h3 id="响应时长"><a href="#响应时长" class="headerlink" title="响应时长"></a>响应时长</h3><p><img src="https://i.imgur.com/2k9DUsY.png" alt=""></p>
 <h2 id="测试结果二"><a href="#测试结果二" class="headerlink" title="测试结果二"></a>测试结果二</h2><pre><code>开启TIME_WAIT重用，FIN_WAIT_2状态时间为30
-</code></pre><h3 id="聚合分析-1"><a href="#聚合分析-1" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/29x2Idw.png" alt=""><br><img src="https://i.imgur.com/4vLS2uA.png" alt=""></p>
+</code></pre><h3 id="聚合分析-1"><a href="#聚合分析-1" class="headerlink" title="聚合分析"></a>聚合分析</h3><p><img src="https://i.imgur.com/29x2Idw.png" alt="">
+<img src="https://i.imgur.com/4vLS2uA.png" alt=""></p>
 <h3 id="响应时长-1"><a href="#响应时长-1" class="headerlink" title="响应时长"></a>响应时长</h3><p><img src="https://i.imgur.com/ZMkoGuB.png" alt=""></p>
 <h1 id="数据库访问情况"><a href="#数据库访问情况" class="headerlink" title="数据库访问情况"></a>数据库访问情况</h1><hr>
 <h3 id="T-REGINFOHIS表"><a href="#T-REGINFOHIS表" class="headerlink" title="T_REGINFOHIS表"></a>T_REGINFOHIS表</h3><ul>
@@ -561,7 +563,32 @@ VALUES (?, ?, ?, ?, ?
 </code></pre></li>
 </ul>
 <hr>
-<h3 id="sql统计结果"><a href="#sql统计结果" class="headerlink" title="sql统计结果"></a>sql统计结果</h3><table style="table-layout:auto"><br>    <tr><br>        <td>用例</td><br>        <td>执行数</td><br>        <td>执行时间</td><br>        <td>最慢</td><br>        <td>时间分布</td><br>        <td>平均时间</td><br>    </tr><br>    <tr><br>        <td>写入T_REGINFOHIS</td><br>        <td>1,000,000</td><br>        <td>33,850,801</td><br>        <td>8,945</td><br>        <td>[310988,441162,157808,86465,3577,0,0,0]</td><br>        <td>33.9</td><br>    </tr><br>    <tr><br>        <td>写入T_REGINFO</td><br>        <td>1,000,000</td><br>        <td>37,210,288</td><br>        <td>8,906</td><br>        <td>[403461,337974,188582,64237,5746,0,0,0]</td><br>        <td>37.2</td><br>    </tr><br></table>
+<h3 id="sql统计结果"><a href="#sql统计结果" class="headerlink" title="sql统计结果"></a>sql统计结果</h3><table style="table-layout:auto">
+    <tr>
+        <td>用例</td>
+        <td>执行数</td>
+        <td>执行时间</td>
+        <td>最慢</td>
+        <td>时间分布</td>
+        <td>平均时间</td>
+    </tr>
+    <tr>
+        <td>写入T_REGINFOHIS</td>
+        <td>1,000,000</td>
+        <td>33,850,801</td>
+        <td>8,945</td>
+        <td>[310988,441162,157808,86465,3577,0,0,0]</td>
+        <td>33.9</td>
+    </tr>
+    <tr>
+        <td>写入T_REGINFO</td>
+        <td>1,000,000</td>
+        <td>37,210,288</td>
+        <td>8,906</td>
+        <td>[403461,337974,188582,64237,5746,0,0,0]</td>
+        <td>37.2</td>
+    </tr>
+</table>
       
     </div>
     

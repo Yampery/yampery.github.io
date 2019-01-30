@@ -374,17 +374,42 @@ wget http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.4.0/HDP-2.
 </code></pre><p> 将以上tgz文件解压在/var/www/html下</p>
 </li>
 <li><p>启动httpd测试访问</p>
-<p> systemctl start httpd<br> 访问：<a href="http://node1/ambari" target="_blank" rel="noopener">http://node1/ambari</a>, <a href="http://node1/HDP" target="_blank" rel="noopener">http://node1/HDP</a>, <a href="http://node1/HDP-UTILS.." target="_blank" rel="noopener">http://node1/HDP-UTILS..</a>.</p>
+<p> systemctl start httpd
+ 访问：<a href="http://node1/ambari" target="_blank" rel="noopener">http://node1/ambari</a>, <a href="http://node1/HDP" target="_blank" rel="noopener">http://node1/HDP</a>, <a href="http://node1/HDP-UTILS.." target="_blank" rel="noopener">http://node1/HDP-UTILS..</a>.</p>
 </li>
 <li><p>配置yum源</p>
 <ul>
 <li><p>更改/etc/yum.repos.d/下刚才下载的文件，将源路径指向node1</p>
 <p>vi /etc/yum.repos.d/hdp.repo</p>
-<p>  [HDP-2.6.4.0]<br>  name=HDP Version - HDP-2.6.4.0<br>  baseurl=<a href="http://node1/HDP/centos7/2.6.4.0-91" target="_blank" rel="noopener">http://node1/HDP/centos7/2.6.4.0-91</a><br>  gpgcheck=1<br>  gpgkey=<a href="http://node1/HDP/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a><br>  enabled=1<br>  priority=1</p>
-<p>  [HDP-UTILS-1.1.0.22]<br>  name=HDP-UTILS Version - HDP-UTILS-1.1.0.22<br>  baseurl=<a href="http://node1/HDP-UTILS/centos7/1.1.0.22" target="_blank" rel="noopener">http://node1/HDP-UTILS/centos7/1.1.0.22</a><br>  gpgcheck=1<br>  gpgkey=<a href="http://node1/HDP-UTILS/centos7/1.1.0.22/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP-UTILS/centos7/1.1.0.22/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a><br>  enabled=1<br>  priority=1</p>
-<p>  [HDP-GPL-2.6.4.0]<br>  name=HDP-GPL Version - HDP-GPL-2.6.4.0<br>  baseurl=<a href="http://node1/HDP-GPL/centos7/2.6.4.0-91" target="_blank" rel="noopener">http://node1/HDP-GPL/centos7/2.6.4.0-91</a><br>  gpgcheck=1<br>  gpgkey=<a href="http://node1/HDP-GPL/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP-GPL/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a><br>  enabled=1<br>  priority=1</p>
+<p>  [HDP-2.6.4.0]
+  name=HDP Version - HDP-2.6.4.0
+  baseurl=<a href="http://node1/HDP/centos7/2.6.4.0-91" target="_blank" rel="noopener">http://node1/HDP/centos7/2.6.4.0-91</a>
+  gpgcheck=1
+  gpgkey=<a href="http://node1/HDP/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a>
+  enabled=1
+  priority=1</p>
+<p>  [HDP-UTILS-1.1.0.22]
+  name=HDP-UTILS Version - HDP-UTILS-1.1.0.22
+  baseurl=<a href="http://node1/HDP-UTILS/centos7/1.1.0.22" target="_blank" rel="noopener">http://node1/HDP-UTILS/centos7/1.1.0.22</a>
+  gpgcheck=1
+  gpgkey=<a href="http://node1/HDP-UTILS/centos7/1.1.0.22/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP-UTILS/centos7/1.1.0.22/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a>
+  enabled=1
+  priority=1</p>
+<p>  [HDP-GPL-2.6.4.0]
+  name=HDP-GPL Version - HDP-GPL-2.6.4.0
+  baseurl=<a href="http://node1/HDP-GPL/centos7/2.6.4.0-91" target="_blank" rel="noopener">http://node1/HDP-GPL/centos7/2.6.4.0-91</a>
+  gpgcheck=1
+  gpgkey=<a href="http://node1/HDP-GPL/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/HDP-GPL/centos7/2.6.4.0-91/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a>
+  enabled=1
+  priority=1</p>
 <p>vi /etc/yum.repos.d/hdp.repo</p>
-<p>  [ambari-2.6.1.0]<br>  name=ambari Version - ambari-2.6.1.0<br>  baseurl=<a href="http://node1/ambari/centos7/2.6.1.0-143" target="_blank" rel="noopener">http://node1/ambari/centos7/2.6.1.0-143</a><br>  gpgcheck=1<br>  gpgkey=<a href="http://node1/ambari/centos7/2.6.1.0-143/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/ambari/centos7/2.6.1.0-143/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a><br>  enabled=1<br>  priority=1</p>
+<p>  [ambari-2.6.1.0]
+  name=ambari Version - ambari-2.6.1.0
+  baseurl=<a href="http://node1/ambari/centos7/2.6.1.0-143" target="_blank" rel="noopener">http://node1/ambari/centos7/2.6.1.0-143</a>
+  gpgcheck=1
+  gpgkey=<a href="http://node1/ambari/centos7/2.6.1.0-143/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins" target="_blank" rel="noopener">http://node1/ambari/centos7/2.6.1.0-143/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins</a>
+  enabled=1
+  priority=1</p>
 </li>
 <li><p>缓存yum源</p>
 <figure class="highlight plain"><figcaption><span>clean all && yum makecache fast</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">	</span><br></pre></td></tr></table></figure>
@@ -417,7 +442,8 @@ MariaDB [(none)]&gt; grant all on hive.* to hive@&apos;%&apos; identified by &ap
 </code></pre><h3 id="安装ambari-server"><a href="#安装ambari-server" class="headerlink" title="安装ambari-server"></a>安装ambari-server</h3><pre><code>yum install ambari-server -y
 ambari-server setup
 </code></pre><blockquote>
-<p>安装过程中要选择数据库，如果出现如下警告：按照提示放入jdbc驱动jar包，并配置路径即可<br>WARNING: Before starting Ambari Server, you must copy the MySQL JDBC driver JAR file to /usr/&gt; share/java and set property “server.jdbc.driver.path=[path/to/custom_jdbc_driver]” in ambari.properties.</p>
+<p>安装过程中要选择数据库，如果出现如下警告：按照提示放入jdbc驱动jar包，并配置路径即可
+WARNING: Before starting Ambari Server, you must copy the MySQL JDBC driver JAR file to /usr/&gt; share/java and set property “server.jdbc.driver.path=[path/to/custom_jdbc_driver]” in ambari.properties.</p>
 </blockquote>
 <pre><code>vim /etc/ambari-server/conf/ambari.properties 
 server.jdbc.driver.path=/usr/share/java/mysql-connector-java-5.1.34.jar
@@ -480,7 +506,8 @@ Adjusting ambari-server permissions and ownership...
 Ambari Server &apos;setup&apos; completed successfully.
 </code></pre><h3 id="启动ambari-server"><a href="#启动ambari-server" class="headerlink" title="启动ambari-server"></a>启动ambari-server</h3><pre><code>ambari-server start
 </code></pre><blockquote>
-<p>启动失败，查看日志：tail /var/log/ambari-server.log<br>Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table ‘ambari.metainfo’ doesn’t exist</p>
+<p>启动失败，查看日志：tail /var/log/ambari-server.log
+Caused by: com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException: Table ‘ambari.metainfo’ doesn’t exist</p>
 </blockquote>
 <pre><code>导入表后再次启动
 mysql -uroot -p ambari &lt; /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
@@ -533,9 +560,12 @@ mysql -uroot -p ambari &lt; /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CR
 <p>根据自己系统配置，建议可以一个个添加，比如先添加HDFS、YARN和MapReduce</p>
 </blockquote>
 <p><img src="https://i.imgur.com/6NR59vZ.png" alt="选择服务"></p>
-<h3 id="assign-master"><a href="#assign-master" class="headerlink" title="assign master"></a>assign master</h3><p>相当于做集群配置<br><img src="https://i.imgur.com/namV8ua.png" alt="指派master"></p>
+<h3 id="assign-master"><a href="#assign-master" class="headerlink" title="assign master"></a>assign master</h3><p>相当于做集群配置
+<img src="https://i.imgur.com/namV8ua.png" alt="指派master"></p>
 <h3 id="主从分配"><a href="#主从分配" class="headerlink" title="主从分配"></a>主从分配</h3><p><img src="https://i.imgur.com/AmndrgO.png" alt="主从分配"></p>
-<h3 id="自定义配置"><a href="#自定义配置" class="headerlink" title="自定义配置"></a>自定义配置</h3><p>红色的表示还需要进一步配置，数据库登录，根据提示来即可<br>之前已经添加了jdbc驱动，因此这里只要执行：<br><figure class="highlight plain"><figcaption><span>setup --jdbc-db</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line"></span><br><span class="line">![自定义配置](https://i.imgur.com/ZnrSK6B.png)</span><br><span class="line"></span><br><span class="line">## 测试MapReduce</span><br><span class="line">**注意：root用户是不能操作hdfs文件系统的，当然可以更改hdfs-site.xml关闭权限验证，不过建议切换hdfs用户来操作**</span><br></pre></td></tr></table></figure></p>
+<h3 id="自定义配置"><a href="#自定义配置" class="headerlink" title="自定义配置"></a>自定义配置</h3><p>红色的表示还需要进一步配置，数据库登录，根据提示来即可
+之前已经添加了jdbc驱动，因此这里只要执行：
+<figure class="highlight plain"><figcaption><span>setup --jdbc-db</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line"></span><br><span class="line">![自定义配置](https://i.imgur.com/ZnrSK6B.png)</span><br><span class="line"></span><br><span class="line">## 测试MapReduce</span><br><span class="line">**注意：root用户是不能操作hdfs文件系统的，当然可以更改hdfs-site.xml关闭权限验证，不过建议切换hdfs用户来操作**</span><br></pre></td></tr></table></figure></p>
 <pre><code>su hdfs &amp;&amp; cd ~
 </code></pre><p><code>`</code></p>
 <ul>
@@ -578,18 +608,14 @@ hadoop jar /usr/hdp/2.6.4.0-91/hadoop-mapreduce/hadoop-mapreduce-examples-2.7.3.
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/05/cryptic_interceptor/" rel="next" title="使用拦截器进行数据加解密">
-                <i class="fa fa-chevron-left"></i> 使用拦截器进行数据加解密
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/01/05/docker_elk/" rel="prev" title="基于docker搭建ELK系统">
-                基于docker搭建ELK系统 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/01/05/cryptic_interceptor/" rel="prev" title="使用拦截器进行数据加解密">
+                使用拦截器进行数据加解密 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
