@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://yoursite.com/2019/01/29/distcp/</loc>
+    <loc>http://yampery.github.io/2019/01/29/distcp/</loc>
     <lastmod>2019-01-30</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/2019/01/05/redis/rdsmq/</loc>
+    <loc>http://yampery.github.io/2019/01/05/redis/rdsmq/</loc>
     <lastmod>2019-01-30</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/2019/01/05/cryptic_interceptor/</loc>
+    <loc>http://yampery.github.io/2019/01/05/cryptic_interceptor/</loc>
     <lastmod>2019-01-30</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/2019/01/05/ambari/</loc>
+    <loc>http://yampery.github.io/2019/01/05/ambari/</loc>
     <lastmod>2018-07-16</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/2019/01/05/docker_elk/</loc>
+    <loc>http://yampery.github.io/2019/01/05/docker_elk/</loc>
     <lastmod>2018-05-18</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/2019/01/05/ykt_test_binding/</loc>
+    <loc>http://yampery.github.io/2019/01/05/ykt_test_binding/</loc>
     <lastmod>2018-04-28</lastmod>
   </url>
 </urlset>
