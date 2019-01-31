@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Yampery&#39;s blog</title>
+  <title>yampery</title>
   
   <subtitle>天尽头，回眸望红尘</subtitle>
   <link href="/atom.xml" rel="self"/>
@@ -10,7 +10,7 @@
   <id>http://yoursite.com/</id>
   
   <author>
-    <name>Yampery</name>
+    <name>yampery</name>
     
   </author>
   
