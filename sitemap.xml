@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/29/distcp/</loc>
+    
+    <lastmod>2019-01-30T08:44:47.049Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/05/redis/rdsmq/</loc>
+    
+    <lastmod>2019-01-30T01:41:05.097Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/05/cryptic_interceptor/</loc>
+    
+    <lastmod>2019-01-30T01:28:52.520Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/05/ambari/</loc>
+    
+    <lastmod>2018-07-16T09:20:08.802Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/05/docker_elk/</loc>
+    
+    <lastmod>2018-05-18T08:22:55.267Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/01/05/ykt_test_binding/</loc>
+    
+    <lastmod>2018-04-28T09:57:05.781Z</lastmod>
+    
+  </url>
+  
+</urlset>
