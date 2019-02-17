@@ -99,7 +99,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://i.imgur.com/EjuUxrL.png">
 <meta property="og:image" content="https://i.imgur.com/38o3TKy.png">
-<meta property="og:updated_time" content="2019-02-17T07:42:46.890Z">
+<meta property="og:updated_time" content="2019-02-17T07:46:24.020Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hadoop集群间文件拷贝">
 <meta name="twitter:description" content="distcp使用 DistCp Version 2(分布式copy)是用于集群间/集群内的文件copy工具， 使用MapReduce实现分布式、错误处理、恢复和报告。distCp会根据目录文件生成map任务， 每一个任务会copy部分文件内容。   基本使用 最常使用的是集群间copy   1hadoop distcp hdfs://nn1:8020/foo/bar hdfs://nn2:8020">
@@ -575,9 +575,7 @@ InputSplit算是Hadoop的一种存储格式，是Hadoop定义的用来传送给�
 <hr>
 <h2 id="不同版本间拷贝"><a href="#不同版本间拷贝" class="headerlink" title="不同版本间拷贝"></a>不同版本间拷贝</h2><p>  对于两个不同主版本Hadoop之间的拷贝来说(例如：1.X和2.X)，其中一个通常使用 <code>WebHdfsFileSystem</code>，不同于 <code>HftpFileSystem</code>，webhdfs适用于读和写操作，hftp是只读操作。DistCp可以运行在源集群或目标集群上。远程集群指定 <code>webhdfs://&lt;namenode_hostname&gt;:&lt;http_port&gt;</code>。当主版本相同时，使用hdfs协议性能会更好。</p>
 <hr>
-<h2 id="MapReduce-和-其他副作用"><a href="#MapReduce-和-其他副作用" class="headerlink" title="MapReduce 和 其他副作用"></a>MapReduce 和 其他副作用</h2><p>  As has been mentioned in the preceding, should a map fail to copy one of its
-  inputs, there will be several side-effects.
-  之前提到过，万一一个map拷贝inputs（属于该map的）中的一个失败了，将会带来一些副作用：</p>
+<h2 id="MapReduce-和-其他副作用"><a href="#MapReduce-和-其他副作用" class="headerlink" title="MapReduce 和 其他副作用"></a>MapReduce 和 其他副作用</h2><p>  之前提到过，万一一个map拷贝inputs（属于该map的）中的一个失败了，将会带来一些副作用：</p>
 <ul>
 <li>除非指定了 <code>-overwrite</code>，否则之前的map成功拷贝的文件将被标记为”skipped”；</li>
 <li>如果一个map在尝试最大次数(<code>mapreduce.map.maxattempts</code>)后失败，剩下的map任务将被杀死(除非指定 <code>-i</code>)；</li>
